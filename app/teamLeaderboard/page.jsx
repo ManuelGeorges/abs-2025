@@ -56,7 +56,9 @@ export default function TeamLeaderboardPage() {
 
         for (const userDoc of usersSnapshot.docs) {
           const userData = userDoc.data();
-          if (userData.role !== 'user' && userData.role !== 'teamLeader') continue;
+
+          // استبعاد teamLeader من الظهور
+          if (userData.role !== 'user') continue;
 
           const userEmail = userData.email;
           const userName = userData.name || 'No Name';
@@ -118,7 +120,7 @@ export default function TeamLeaderboardPage() {
       <h2 className="leaderboard-title">🏅 Team {currentTeamKey} Leaderboard</h2>
 
       <div className="week-selector">
-        {[1, 2, 3, 4, 5, 6, 7].map(week => (
+        {[1, 2, 3, 4, 5, 6, 7].map((week) => (
           <button
             key={week}
             onClick={() => setSelectedWeek(week)}
@@ -148,7 +150,9 @@ export default function TeamLeaderboardPage() {
                 className={`${getRowClass(ranks[idx])} ${player.userEmail === currentEmail ? 'highlight' : ''}`}
               >
                 <td>{ranks[idx]}</td>
-                <td>{player.userName} {player.userEmail === currentEmail && '(you)'}</td>
+                <td>
+                  {player.userName} {player.userEmail === currentEmail && '(you)'}
+                </td>
                 <td>{player.totalScore}</td>
               </tr>
             ))}
