@@ -13,7 +13,7 @@ export default function TeamLeaderboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(1);
 
-  const START_DATE = new Date('2025-06-20'); // تاريخ بداية الأسبوع الأول
+  const START_DATE = new Date('2025-06-20');
 
   const isWeekAvailable = (week) => {
     const now = new Date();
@@ -56,7 +56,7 @@ export default function TeamLeaderboardPage() {
 
         for (const userDoc of usersSnapshot.docs) {
           const userData = userDoc.data();
-          if (userData.role !== 'user') continue;
+          if (userData.role !== 'user' && userData.role !== 'teamLeader') continue;
 
           const userEmail = userData.email;
           const userName = userData.name || 'No Name';
@@ -105,12 +105,6 @@ export default function TeamLeaderboardPage() {
   }
 
   const ranks = getRanks(scores);
-  const topThree = scores.slice(0, 3);
-  const topThreeRanks = ranks.slice(0, 3);
-  const currentUserIndex = currentEmail ? scores.findIndex(player => player.userEmail === currentEmail) : -1;
-  const currentUserData = currentUserIndex !== -1 ? scores[currentUserIndex] : null;
-  const currentUserRank = currentUserIndex !== -1 ? ranks[currentUserIndex] : null;
-  const isInTopThree = currentUserIndex >= 0 && currentUserIndex < 3;
 
   function getRowClass(rank) {
     if (rank === 1) return 'gold';
@@ -148,27 +142,16 @@ export default function TeamLeaderboardPage() {
             </tr>
           </thead>
           <tbody>
-            {topThree.map((player, idx) => (
+            {scores.map((player, idx) => (
               <tr
                 key={player.userEmail}
-                className={`${getRowClass(topThreeRanks[idx])} ${player.userEmail === currentEmail ? 'highlight' : ''}`}
+                className={`${getRowClass(ranks[idx])} ${player.userEmail === currentEmail ? 'highlight' : ''}`}
               >
-                <td>{topThreeRanks[idx]}</td>
+                <td>{ranks[idx]}</td>
                 <td>{player.userName} {player.userEmail === currentEmail && '(you)'}</td>
                 <td>{player.totalScore}</td>
               </tr>
             ))}
-
-            {!isInTopThree && currentUserData && (
-              <>
-                <tr className="spacer-row"><td colSpan="4"></td></tr>
-                <tr className="highlight">
-                  <td>{currentUserRank}</td>
-                  <td>{currentUserData.userName} <span className='you'>(You)</span></td>
-                  <td>{currentUserData.totalScore}</td>
-                </tr>
-              </>
-            )}
           </tbody>
         </table>
       )}
