@@ -1,0 +1,172 @@
+/* page.css */
+
+.director-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f0f8ff;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  color: #003366;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+.score {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #0d47a1;
+  background: #bbdefb;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.team-card {
+  background: #e0f7fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.team-card h2 {
+  color: #00796b;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #004d40;
+  padding-bottom: 5px;
+}
+
+.report-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.report-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.report-card h3 {
+  margin-top: 0;
+  color: #004d40;
+  margin-bottom: 10px;
+}
+
+.report-card p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.answers p {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+.yes {
+  color: #2e7d32; /* green */
+  font-weight: bold;
+}
+
+.no {
+  color: #c62828; /* red */
+  font-weight: bold;
+}
+
+.approved {
+  color: #00796b;
+  font-weight: bold;
+}
+
+.not-approved {
+  color: #b71c1c;
+  font-weight: bold;
+}
+
+.loading {
+  font-size: 1.2rem;
+  color: #00796b;
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .director-container {
+    padding: 10px;
+  }
+  .team-card {
+    padding: 15px;
+  }
+  .report-card {
+    padding: 10px 15px;
+  }
+  .answers p {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.week-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.week-button {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.week-button:hover {
+  background-color: #d0d0d0;
+}
+
+.week-button.active {
+  background-color: #0070f3;
+  color: white;
+}
+
+.yes {
+  color: green;
+  font-weight: bold;
+}
+
+.no {
+  color: red;
+  font-weight: bold;
+}
+
+.score {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  color: #777;
+}

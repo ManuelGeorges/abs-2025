@@ -1,0 +1,172 @@
+/* Container */
+.form-container {
+  max-width: 480px;
+  margin: 30px auto;
+  padding: 25px 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(90, 103, 216, 0.2);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+/* العنوان */
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #3b3b98;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* كل سؤال */
+.question-group {
+  margin-bottom: 22px;
+}
+
+/* نص السؤال */
+.question-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+/* مجموعة الراديو */
+.radio-group {
+  display: flex;
+  gap: 35px;
+  flex-wrap: wrap;
+}
+
+/* الليبل والراديو */
+.radio-group label {
+  font-size: 1.3rem;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+
+/* الدائرة الكبيرة */
+.radio-group input[type="radio"] {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  accent-color: #5a67d8;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(90, 103, 216, 0.6);
+  transition: box-shadow 0.2s ease;
+}
+
+.radio-group input[type="radio"]:hover {
+  box-shadow: 0 0 7px rgba(90, 103, 216, 0.9);
+}
+
+/* زر الإرسال */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #5a67d8;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+  box-shadow: 0 4px 8px rgba(90, 103, 216, 0.5);
+}
+
+.submit-btn:hover {
+  background-color: #434aa8;
+}
+
+/* رسالة النجاح أو الخطأ */
+.message {
+  margin-top: 18px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(21, 87, 36, 0.5);
+}
+
+/* رسالة خطأ */
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  box-shadow: 0 3px 8px rgba(114, 28, 36, 0.5);
+}
+
+/* تحميل */
+.loading {
+  font-size: 1.4rem;
+  color: #5a67d8;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* متجاوب - شاشات صغيرة */
+@media (max-width: 480px) {
+  .form-container {
+    margin: 15px 10px;
+    padding: 20px 15px;
+  }
+
+  .radio-group {
+    gap: 25px;
+  }
+
+  .radio-group label {
+    font-size: 1.1rem;
+  }
+
+  .submit-btn {
+    font-size: 1.1rem;
+    padding: 12px;
+  }
+}
+.success {
+  /* نسخ من .message */
+  margin-top: 18px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(21, 87, 36, 0.5);
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  box-shadow: 0 3px 8px rgba(114, 28, 36, 0.5);
+}
+
+.submit-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(90, 103, 216, 0.5);
+}
+
+input[type="radio"]:focus {
+  outline: 2px solid #5a67d8;
+}
+.submit-btn:focus {
+  outline: 2px solid #434aa8;
+}
+
+.form-container,
+.question-group,
+.submit-btn {
+  transition: all 0.3s ease;
+}

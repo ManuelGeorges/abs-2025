@@ -1,0 +1,158 @@
+.welcome {
+  font-size: 1.8em;
+  text-align: center;
+  font-weight: bold;
+  color: #ff1500;
+  text-shadow: 5px 5px 20px blue;
+}
+
+.signup-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fefefe;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.signup-title {
+  text-align: center;
+  color: #222;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+.signup-input,
+.signup-select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1.8px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline-color: #4A90E2;
+  transition: border-color 0.3s ease;
+}
+
+.signup-input:focus,
+.signup-select:focus {
+  border-color: #4A90E2;
+}
+
+.signup-button,
+.google-button {
+  width: 100%;
+  padding: 14px 0;
+  margin-top: 10px;
+  background-color: #4A90E2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-button:hover,
+.google-button:hover {
+  background-color: #357ABD;
+}
+
+.signup-login-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.signup-login-link span {
+  color: #4A90E2;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.signup-divider {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+.signup-container {
+  text-align: center;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  }
+  
+  .signup-title {
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+  
+  .signup-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .signup-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+  
+  .signup-button:hover {
+    background-color: #005bb5;
+  }
+  
+  .signup-login-link {
+    margin-bottom: 20px;
+  }
+  
+  .signup-login-link span {
+    color: #0070f3;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .signup-divider {
+    margin: 20px 0;
+  }
+  
+  .google-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .google-button:hover {
+    background-color: #b63528;
+  }
+
+  .error-message {
+    color: #d93025; /* لون أحمر لطيف */
+    background-color: #fce8e6; /* خلفية وردية هادية */
+    border: 1px solid #d93025;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    text-align: center;
+  }

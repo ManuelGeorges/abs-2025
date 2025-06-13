@@ -1,0 +1,117 @@
+/* General container */
+.leaderboard-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #f9f9ff;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: auto;
+}
+
+/* Title */
+.leaderboard-title {
+  text-align: center;
+  font-size: clamp(16px, 4vw, 22px); /* أصغر */
+  font-weight: bold;
+  color: #1d4ed8;
+  margin-bottom: 25px;
+}
+
+/* Week Buttons */
+.week-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.week-btn {
+  background-color: white;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: clamp(10px, 2.5vw, 14px); /* أصغر */
+  transition: 0.2s;
+}
+
+.week-btn.selected,
+.week-btn:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* Table */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: clamp(10px, 2vw, 14px); /* أصغر */
+  table-layout: fixed;
+}
+
+.leaderboard-table thead {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Team Name Column */
+.leaderboard-table td:nth-child(2),
+.leaderboard-table th:nth-child(2) {
+  text-align: left;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word;
+  max-width: 160px;
+}
+
+/* Rank Colors */
+.gold {
+  background-color: #fff8dc;
+  color: #b8860b;
+  font-weight: bold;
+}
+
+.silver {
+  background-color: #e5e5e5;
+  color: #4b4b4b;
+  font-weight: bold;
+}
+
+.bronze {
+  background-color: #f1c27d;
+  color: #5a3e1b;
+  font-weight: bold;
+}
+
+/* Text feedback */
+.loading-text,
+.no-data {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: clamp(11px, 2.5vw, 14px); /* أصغر */
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 20px;
+  }
+
+  .leaderboard-table td:nth-child(2),
+  .leaderboard-table th:nth-child(2) {
+    max-width: 120px;
+  }
+}

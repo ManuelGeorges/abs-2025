@@ -1,0 +1,81 @@
+.welcome {
+    font-size: 1.8em;
+    text-align: center;
+    font-weight: bold;
+    color: #ff1500;
+    text-shadow: 5px 5px 20px blue;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+  }
+  
+  .login-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 2em;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .login-button:hover {
+    background-color: #005ac1;
+  }
+  
+  .google-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .google-button:hover {
+    background-color: #c1351d;
+  }
+  
+  .login-switch {
+    text-align: center;
+    margin: 10px 0;
+  }
+
+.signup{
+    text-decoration: underline;
+    color: #0070f3;
+}
+
+.error-message {
+    color: #d93025; /* لون أحمر لطيف */
+    background-color: #fce8e6; /* خلفية وردية هادية */
+    border: 1px solid #d93025;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    text-align: center;
+  }
