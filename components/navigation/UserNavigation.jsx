@@ -33,11 +33,19 @@ export default function UserNavigation() {
     <div>
       {/* ✅ Top Navigation (ثابت للكل ما عدا director ملوش team leaderboard) */}
       <nav className="top-nav">
-        {role !== "director" && (
+        {role === "quest-admin" && (
+          <>
+            <Link href="/leaderboard">L.B</Link>
+            <Link href="/teamsLeaderboard">Teams L.B</Link>
+          </>
+        )}
+
+        {role !== "director" && role !== "quest-admin" && (
           <Link href="/teamLeaderboard/">Friends L.B</Link>
         )}
-        <Link href="/teamsLeaderboard">Teams L.B</Link>
-        <Link href="/leaderboard">L.B</Link>
+
+        {role !== "quest-admin" && <Link href="/teamsLeaderboard">Teams L.B</Link>}
+        {role !== "quest-admin" && <Link href="/leaderboard">L.B</Link>}
       </nav>
 
       {/* ✅ Bottom Navigation (حسب الدور) */}
@@ -56,6 +64,12 @@ export default function UserNavigation() {
           <>
             <Link href="/directorIndividualDashboard">People DB</Link>
             <Link href="/directorTeamsDashboard">Teams DB</Link>
+          </>
+        )}
+
+        {role === "quest-admin" && (
+          <>
+            <Link href="/questAdminDashboard">Questions DB</Link>
           </>
         )}
       </nav>

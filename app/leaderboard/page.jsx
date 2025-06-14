@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import './page.css';
 
 export default function LeaderboardPage() {
-  const [currentEmail, setCurrentEmail] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const today = new Date();
-    const startDate = new Date('2025-06-20');
+    const startDate = new Date('2025-06-13');
     const tempWeeks = [];
 
     for (let i = 0; i < 7; i++) {
@@ -30,40 +30,98 @@ export default function LeaderboardPage() {
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentEmail(user ? user.email : null);
+      setCurrentUserId(user?.uid || null);
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (!selectedWeek || !currentEmail) return;
+    if (!selectedWeek) return;
 
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
         const reportsRef = collection(db, 'reports');
-        const reportsQuery = query(
-          reportsRef,
-          where('approved', '==', true),
-          where('weekNumber', '==', Number(selectedWeek))
-        );
+        const questRef = collection(db, 'questScores');
+        const usersRef = collection(db, 'users');
 
-        const snapshot = await getDocs(reportsQuery);
+        // جلب تقارير الأسبوع المحدد
+        const reportsQuery = query(reportsRef, where('weekNumber', '==', Number(selectedWeek)));
+        const reportsSnap = await getDocs(reportsQuery);
 
-        let scores = [];
+        const questStart = new Date('2025-06-13');
+        const startOfWeek = new Date(questStart);
+        startOfWeek.setDate(startOfWeek.getDate() + (selectedWeek - 1) * 7);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
 
-        snapshot.forEach((doc) => {
+        // جلب نتائج المهمات في نفس الأسبوع
+        const questSnap = await getDocs(questRef);
+
+        const questScores = {};
+        questSnap.forEach((doc) => {
           const data = doc.data();
-          scores.push({
-            userEmail: data.email ?? 'unknown@email.com',
-            userName: data.username ?? 'No Name',
-            userTeam: data.teamKey ?? 'No Team',
-            totalScore: Number(data.score) || 0,
-          });
+          const date = new Date(data.date);
+          if (date >= startOfWeek && date <= endOfWeek) {
+            if (!questScores[data.userId]) questScores[data.userId] = 0;
+            questScores[data.userId] += Number(data.score || 0);
+          }
         });
 
-        scores.sort((a, b) => b.totalScore - a.totalScore);
-        setReportData(scores);
+        // دمج نتائج التقارير والمهام
+        const tempData = {};
+        reportsSnap.forEach((doc) => {
+          const data = doc.data();
+          const userId = data.userId;
+          if (!tempData[userId]) {
+            tempData[userId] = {
+              userId,
+              reportScore: Number(data.score) || 0,
+              questScore: 0,
+            };
+          } else {
+            tempData[userId].reportScore = Number(data.score) || 0;
+          }
+        });
+
+        Object.keys(questScores).forEach((userId) => {
+          if (!tempData[userId]) {
+            tempData[userId] = {
+              userId,
+              reportScore: 0,
+              questScore: questScores[userId],
+            };
+          } else {
+            tempData[userId].questScore = questScores[userId];
+          }
+        });
+
+        // جلب بيانات المستخدمين للعرض
+        const allUserIds = Object.keys(tempData);
+        const chunkedUserIds = allUserIds.slice(0, 10); // ملاحظة: ممكن تحتاج تحسين لو أكتر من 10
+
+        const usersSnap = await getDocs(query(collection(db, 'users'), where('__name__', 'in', chunkedUserIds)));
+        const usersMap = {};
+        usersSnap.forEach((doc) => {
+          const data = doc.data();
+          usersMap[doc.id] = {
+            name: data.name ?? 'No Name',
+            teamKey: data.teamKey ?? 'No Team',
+          };
+        });
+
+        const finalData = allUserIds.map((userId) => ({
+          userId,
+          userName: usersMap[userId]?.name || 'No Name',
+          userTeam: usersMap[userId]?.teamKey || 'No Team',
+          reportScore: tempData[userId].reportScore,
+          questScore: tempData[userId].questScore,
+          totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
+        }));
+
+        finalData.sort((a, b) => b.totalScore - a.totalScore);
+
+        setReportData(finalData);
       } catch (error) {
         console.error('❌ Error fetching leaderboard:', error);
       } finally {
@@ -72,23 +130,45 @@ export default function LeaderboardPage() {
     };
 
     fetchLeaderboard();
-  }, [selectedWeek, currentEmail]);
+  }, [selectedWeek]);
 
-  function getRanks(scores) {
+  // ترتيب dense ranking:  
+  function getDenseRanks(sortedData) {
     const ranks = [];
-    let currentRank = 1;
-    ranks[0] = currentRank;
-
-    for (let i = 1; i < scores.length; i++) {
-      if (scores[i].totalScore === scores[i - 1].totalScore) {
-        ranks[i] = currentRank;
+    ranks[0] = 1;
+    for (let i = 1; i < sortedData.length; i++) {
+      if (sortedData[i].totalScore === sortedData[i - 1].totalScore) {
+        ranks[i] = ranks[i - 1];
       } else {
-        currentRank = i + 1;
-        ranks[i] = currentRank;
+        ranks[i] = ranks[i - 1] + 1;
+      }
+    }
+    return ranks;
+  }
+
+  // فلترة عرض فقط top 3 + المستخدم الحالي حتى لو مش من الtop3
+  function filterTop3WithUser(data, currentUserId) {
+    if (!data) return [];
+
+    const ranks = getDenseRanks(data);
+    let top3 = [];
+    let currentUserEntry = null;
+
+    for (let i = 0; i < data.length; i++) {
+      if (ranks[i] <= 3) {
+        top3.push({ ...data[i], rank: ranks[i] });
+      }
+      if (data[i].userId === currentUserId) {
+        currentUserEntry = { ...data[i], rank: ranks[i] };
       }
     }
 
-    return ranks;
+    const userInTop3 = top3.some((entry) => entry.userId === currentUserId);
+    if (!userInTop3 && currentUserEntry) {
+      top3.push(currentUserEntry);
+    }
+
+    return top3;
   }
 
   function getRowClass(rank) {
@@ -97,6 +177,8 @@ export default function LeaderboardPage() {
     if (rank === 3) return 'bronze';
     return '';
   }
+
+  const displayedData = filterTop3WithUser(reportData, currentUserId);
 
   return (
     <div className="leaderboard-container">
@@ -116,41 +198,39 @@ export default function LeaderboardPage() {
 
       {loading && <p className="loading-text">Loading leaderboard...</p>}
 
-      {!loading && selectedWeek && reportData && reportData.length > 0 && (
+      {!loading && selectedWeek && displayedData && displayedData.length > 0 && (
         <table className="leaderboard-table">
           <thead>
             <tr>
-              <th>Rank</th>
+              <th className='rank-header'>Rank</th>
               <th>Name</th>
               <th>Team</th>
-              <th>Score</th>
+              <th>Rep. </th>
+              <th>Quests</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            {reportData.map((player, idx) => {
-              const rank = getRanks(reportData)[idx];
-              return (
-                <tr
-                  key={player.userEmail}
-                  className={`${getRowClass(rank)} ${
-                    player.userEmail === currentEmail ? 'highlight' : ''
-                  }`}
-                >
-                  <td>{rank}</td>
-                  <td>
-                    {player.userName}
-                    {player.userEmail === currentEmail && ' ⭐'}
-                  </td>
-                  <td>{player.userTeam}</td>
-                  <td>{player.totalScore}</td>
-                </tr>
-              );
-            })}
+            {displayedData.map((player) => (
+              <tr
+                key={player.userId}
+                className={`${getRowClass(player.rank)} ${
+                  player.userId === currentUserId ? 'highlight' : ''
+                }`}
+              >
+                <td>{player.rank}</td>
+                <td>{player.userName}{player.userId === currentUserId && ' ⭐'}</td>
+                <td>{player.userTeam}</td>
+                <td>{player.reportScore}</td>
+                <td>{player.questScore}</td>
+                <td>{player.totalScore}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       )}
 
-      {!loading && selectedWeek && reportData && reportData.length === 0 && (
+      {!loading && selectedWeek && displayedData && displayedData.length === 0 && (
         <p className="loading-text">No data for Week {selectedWeek}</p>
       )}
     </div>

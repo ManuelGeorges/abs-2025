@@ -125,82 +125,58 @@
 
 /* Week Selector Buttons */
 .week-selector {
-  text-align: center;
-  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.week-button {
-  background-color: #e0ecff;
-  border: 2px solid #2563eb;
-  color: #2563eb;
-  padding: 10px 18px;
-  margin: 0 5px;
-  border-radius: 10px;
+.week-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+  border-radius: 9999px;
   font-weight: 600;
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
 }
 
-.week-button:hover,
-.week-button.active-week {
-  background-color: #2563eb;
-  color: #ffffff;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+.week-btn:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
 }
 
-/* ==== Disabled Week Button ==== */
-.week-button:disabled {
-  background-color: #f1f5f9;
-  border: 2px dashed #94a3b8;
-  color: #94a3b8;
+.week-btn.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.week-btn:disabled {
+  border-color: #ccc;
+  color: #aaa;
   cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
+  background-color: #f0f0f0;
 }
 
-/* Navbar */
-.navbar {
-  width: 100%;
-  background-color: #1e3a8a;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+.yes {
+  color: green;
+  font-weight: bold;
 }
 
-.navbar .logo {
-  font-size: 26px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 1.5px;
+.no {
+  color: red;
+  font-weight: bold;
 }
 
-.navbar .nav-links {
-  display: flex;
-  gap: 25px;
+.no-data {
+  text-align: center;
+  color: gray;
+  margin-top: 1rem;
 }
 
-.navbar .nav-links a {
-  color: #ffffffcc;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
-}
-
-.navbar .nav-links a:hover {
-  color: #fff;
-  transform: translateY(-2px);
-  text-shadow: 0 1px 5px #ffffff44;
-}
-
-/* ===== Responsive Styling (Media Queries) ===== */
+/* ====== Responsive Media Queries ====== */
 @media (max-width: 768px) {
   .leaderboard-container {
     padding: 30px 20px;
@@ -220,53 +196,128 @@
 
   .leaderboard-table th,
   .leaderboard-table td {
-    padding: 12px;
-  }
-
-  .navbar {
-    flex-direction: column;
-    padding: 10px 20px;
-  }
-
-  .navbar .logo {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
-  .navbar .nav-links {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .week-button {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 12px 10px;
   }
 
   .loading-text {
     font-size: 18px;
   }
+
+  .you {
+    font-size: 13px;
+  }
+
+  .week-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
   .leaderboard-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .leaderboard-table {
     font-size: 14px;
   }
 
-  .week-button {
-    font-size: 13px;
-    padding: 6px 10px;
+  .leaderboard-table thead tr {
+    font-size: 16px;
   }
 
-  .navbar .logo {
+  .loading-text {
+    font-size: 16px;
+  }
+
+  .you {
+    font-size: 12px;
+  }
+
+  .week-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* أهم تعديل على الأعمدة عشان الكلمات تلتف بدل ما تتقطع */
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px 10px;
+  word-wrap: break-word;       /* السماح بالتفاف الكلمة */
+  word-break: break-word;      /* كسر الكلمات الطويلة */
+  white-space: normal;         /* عشان الكلام يلتف */
+}
+
+/* نعدل تاني على الجدول عشان يبقى responsive أكتر */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  text-align: center;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 18px;
+  overflow-x: auto;       /* لو الجدول طويل يسمح بالتمرير الأفقي */
+  border-radius: 20px;
+  table-layout: auto;     /* خلي الجدول متجاوب مش ثابت */
+}
+
+/* في الميديا كويريز، نقلل padding وخففنا حجم الخط */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 20px 15px;
+  }
+
+  .leaderboard-title {
+    font-size: 26px;
+  }
+
+  .leaderboard-table {
+    font-size: 14px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 6px;
+    font-size: .8em;
+  }
+
+  .week-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-container {
+    padding: 15px 10px;
+  }
+
+  .leaderboard-title {
     font-size: 20px;
   }
 
-  .navbar .nav-links a {
-    font-size: 14px;
+  .leaderboard-table {
+    font-size: 12px;
   }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 6px 3px;
+  }
+  .leaderboard-table th {
+    font-size: .5em;
+    text-wrap: nowrap; /* منع التفاف النص في العناوين */
+  }
+
+  .week-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
+
+.rank-header{
+  white-space: nowrap; /* منع التفاف النص */
+  width: 80px;
 }

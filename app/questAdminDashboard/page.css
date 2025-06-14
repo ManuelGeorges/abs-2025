@@ -1,0 +1,98 @@
+.quest-dashboard {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: auto;
+}
+
+.quest-dashboard h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #333;
+}
+
+.quest-dashboard label {
+  display: block;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.quest-dashboard input[type='date'] {
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.quest-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.quest-table th,
+.quest-table td {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem;
+}
+
+.answer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.answer-buttons button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #f1f1f1;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.answer-buttons button:hover {
+  background-color: #ddd;
+  transform: scale(1.05);
+}
+
+.answer-buttons .selected {
+  font-weight: bold;
+  color: white;
+}
+
+.answer-buttons .selected.yes {
+  background-color: #4caf50;
+}
+
+.answer-buttons .selected.no {
+  background-color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .quest-dashboard {
+    padding: 1rem;
+  }
+
+  .quest-table th,
+  .quest-table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .answer-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .answer-buttons button {
+    width: 100%;
+  }
+}

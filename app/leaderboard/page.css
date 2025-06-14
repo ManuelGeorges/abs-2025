@@ -239,3 +239,85 @@
     font-size: 12px;
   }
 }
+
+/* أهم تعديل على الأعمدة عشان الكلمات تلتف بدل ما تتقطع */
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px 10px;
+  word-wrap: break-word;       /* السماح بالتفاف الكلمة */
+  word-break: break-word;      /* كسر الكلمات الطويلة */
+  white-space: normal;         /* عشان الكلام يلتف */
+}
+
+/* نعدل تاني على الجدول عشان يبقى responsive أكتر */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  text-align: center;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 18px;
+  overflow-x: auto;       /* لو الجدول طويل يسمح بالتمرير الأفقي */
+  border-radius: 20px;
+  table-layout: auto;     /* خلي الجدول متجاوب مش ثابت */
+}
+
+/* في الميديا كويريز، نقلل padding وخففنا حجم الخط */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 20px 15px;
+  }
+
+  .leaderboard-title {
+    font-size: 26px;
+  }
+
+  .leaderboard-table {
+    font-size: 14px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 6px;
+    font-size: .8em;
+  }
+
+  .week-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-container {
+    padding: 15px 10px;
+  }
+
+  .leaderboard-title {
+    font-size: 20px;
+  }
+
+  .leaderboard-table {
+    font-size: 12px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 6px 3px;
+  }
+  .leaderboard-table th {
+    font-size: .5em;
+    text-wrap: nowrap; /* منع التفاف النص في العناوين */
+  }
+
+  .week-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
+
+.rank-header{
+  white-space: nowrap; /* منع التفاف النص */
+  width: 80px;
+}
