@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc, addDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  addDoc
+} from 'firebase/firestore';
 import './page.css';
 
 const WEEK_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
@@ -16,15 +24,14 @@ const TEAM_NAMES = {
   Thyatira: 'ثياتيرا',
   Laodicea: 'لاودكية',
   Pergamos: 'برغامس',
-  Smyrna: 'سميرنا', 
+  Smyrna: 'سميرنا',
   Philadelphia: 'فيلادلفيا',
   Sardis: 'ساردس',
   HeavenlyJerusalem: 'أورشليم السمائية',
 };
 
-// حساب تفعيل الأسبوع حسب التاريخ
 const isWeekEnabled = (weekNumber) => {
-  const startDate = new Date('2025-06-01'); // أول أسبوع
+  const startDate = new Date('2025-06-01');
   const now = new Date();
   const weekDate = new Date(startDate);
   weekDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
@@ -35,6 +42,7 @@ export default function DirectorDashboard() {
   const [week, setWeek] = useState(1);
   const [teamScores, setTeamScores] = useState({});
   const [saveMessage, setSaveMessage] = useState('');
+  const [users, setUsers] = useState([]); // ✅ حالة المستخدمين
 
   useEffect(() => {
     const fetchTeamScores = async () => {
@@ -61,6 +69,14 @@ export default function DirectorDashboard() {
       });
 
       setTeamScores(data);
+
+      // ✅ جلب المستخدمين
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const usersList = usersSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUsers(usersList);
     };
 
     fetchTeamScores();
@@ -165,6 +181,24 @@ export default function DirectorDashboard() {
                 >
                   Save
                 </button>
+              </div>
+
+              {/* ✅ عرض المستخدمين تحت كل فريق */}
+              <div className="team-users">
+                <h4>أعضاء الفريق:</h4>
+                {users.filter((u) => u.teamKey === teamKey).length === 0 ? (
+                  <p style={{ color: '#999' }}>لا يوجد مستخدمين في هذا الفريق.</p>
+                ) : (
+                  <ul>
+                    {users
+                      .filter((u) => u.teamKey === teamKey)
+                      .map((u) => (
+                        <li key={u.id}>
+                          <strong>{u.name || u.username}</strong> - {u.email} - {u.grade} - {u.gender}
+                        </li>
+                      ))}
+                  </ul>
+                )}
               </div>
             </div>
           ))}

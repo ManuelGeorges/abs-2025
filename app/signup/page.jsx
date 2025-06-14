@@ -14,8 +14,8 @@ const teams = [
   { value: "thyatira", label: "ثياتيرا" },
   { value: "sardis", label: "ساردس" },
   { value: "philadelphia", label: "فيلادلفيا" },
-  { value: "laodicea", label: "لاودكيه" },
-  { value: "heavenly_jerusalem", label: "أورشاليم السماوية" },
+  { value: "laodicea", label: "لاودكية" },
+  { value: "heavenly_jerusalem", label: "أورشاليم السمائية" },
 ];
 
 export default function SignupPage() {

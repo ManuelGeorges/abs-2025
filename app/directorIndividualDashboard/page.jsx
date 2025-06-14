@@ -14,6 +14,7 @@ import { auth, db } from "@/lib/firebase";
 import "./page.css";
 
 export default function DirectorDashboard() {
+  const [users, setUsers] = useState([]);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
@@ -26,16 +27,16 @@ export default function DirectorDashboard() {
     "هل أنا قمت بقراءة الجزء المقرر عليك؟",
     "هل أنا قمت بنسخ الجزء المقرر عليك؟",
     "هل أنا قمت بحفظ المزمور؟",
-    "هل أنا حضرت الشرح؟",             
-    "هل أنا حضرت المسابقات؟",         
+    "هل أنا حضرت الشرح؟",
+    "هل أنا حضرت المسابقات؟",
     "هل أنا أتممت المهمة المقررة عليك؟",
-    "هل أنا حضرت التسبحة؟"
+    "هل أنا حضرت التسبحة؟",
   ];
 
   const calculateScore = (answers) => {
     let score = 0;
     for (let i = 0; i < questions.length; i++) {
-      const answer = answers[`question${i + 1}`];
+      const answer = answers?.[`question${i + 1}`];
       if (answer === "yes") {
         if (i === 5 || i === 6) {
           score += 5;
@@ -82,28 +83,44 @@ export default function DirectorDashboard() {
   useEffect(() => {
     if (!userRole) return;
 
-    const fetchReports = async () => {
+    const fetchData = async () => {
       try {
-        const q = query(collection(db, "reports"), where("approved", "==", true));
-        const snapshot = await getDocs(q);
-        const reportsData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        // جلب كل المستخدمين
+        const usersSnap = await getDocs(collection(db, "users"));
+        const usersData = usersSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // جلب التقارير المعتمدة
+        const reportsQuery = query(
+          collection(db, "reports"),
+          where("approved", "==", true),
+          where("weekNumber", "==", selectedWeek)
+        );
+        const reportsSnap = await getDocs(reportsQuery);
+        const reportsData = reportsSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setUsers(usersData);
         setReports(reportsData);
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching reports:", error);
+        console.error("Error fetching data:", error);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    fetchReports();
-  }, [userRole]);
+    fetchData();
+  }, [userRole, selectedWeek]);
 
   if (loading) return <div className="loading">Loading...</div>;
 
-  const filteredReports = reports.filter(r => r.weekNumber === selectedWeek);
-
-  const groupedByTeam = filteredReports.reduce((acc, report) => {
-    if (!acc[report.teamKey]) acc[report.teamKey] = [];
-    acc[report.teamKey].push(report);
+  const groupedByTeam = users.reduce((acc, user) => {
+    if (!acc[user.teamKey]) acc[user.teamKey] = [];
+    acc[user.teamKey].push(user);
     return acc;
   }, {});
 
@@ -123,48 +140,49 @@ export default function DirectorDashboard() {
         ))}
       </div>
 
-      {Object.keys(groupedByTeam).length === 0 ? (
-        <div className="no-data">No approved reports for this week.</div>
-      ) : (
-        Object.entries(groupedByTeam).map(([teamKey, teamReports]) => (
-          <div className="team-card" key={teamKey}>
-            <h2>Team: {teamKey}</h2>
-            {teamReports.map((report) => {
-              const score = calculateScore(report.answers);
-              return (
-                <div className="report-card" key={report.id}>
-                  <h3>{report.username}</h3>
-                  <p><strong>Email:</strong> {report.email}</p>
-                  <p><strong>Gender:</strong> {report.gender}</p>
-                  <p><strong>Grade:</strong> {report.grade}</p>
-                  <p>
-                    <strong>Approved:</strong>{" "}
-                    <span className={report.approved ? "approved" : "not-approved"}>
-                      {report.approved ? "Yes" : "No"}
-                    </span>
-                  </p>
+      {Object.keys(groupedByTeam).map((teamKey) => (
+        <div className="team-card" key={teamKey}>
+          <h2>Team: {teamKey}</h2>
+          {groupedByTeam[teamKey].map((user) => {
+            const report = reports.find((r) => r.email === user.email);
+            const score = report ? calculateScore(report.answers) : null;
 
-                  <div className="answers">
-                    {questions.map((qText, index) => {
-                      const answer = report.answers[`question${index + 1}`];
-                      return (
-                        <p key={`answer-${index}`}>
-                          <strong>{qText}:</strong>{" "}
-                          <span className={answer === "yes" ? "yes" : "no"}>
-                            {answer === "yes" ? "Yes" : "No"}
-                          </span>
-                        </p>
-                      );
-                    })}
-                  </div>
+            return (
+              <div className="report-card" key={user.id}>
+                <h3>{user.name || user.username}</h3>
+                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Gender:</strong> {user.gender}</p>
+                <p><strong>Grade:</strong> {user.grade}</p>
 
-                  <p className="score">Score: <span>{score} / 80</span></p>
-                </div>
-              );
-            })}
-          </div>
-        ))
-      )}
+                {report ? (
+                  <>
+                    <p>
+                      <strong>Approved:</strong>{" "}
+                      <span className="approved">Yes</span>
+                    </p>
+                    <div className="answers">
+                      {questions.map((qText, index) => {
+                        const answer = report.answers[`question${index + 1}`];
+                        return (
+                          <p key={`answer-${index}`}>
+                            <strong>{qText}:</strong>{" "}
+                            <span className={answer === "yes" ? "yes" : "no"}>
+                              {answer === "yes" ? "Yes" : "No"}
+                            </span>
+                          </p>
+                        );
+                      })}
+                    </div>
+                    <p className="score">Score: <span>{score} / 80</span></p>
+                  </>
+                ) : (
+                  <p className="no-report">No approved report for this week.</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
