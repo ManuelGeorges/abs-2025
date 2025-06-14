@@ -16,7 +16,7 @@ import './tdb.css';
 const WEEK_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 const ALL_TEAMS = [
   'Ephesus', 'Thyatira', 'Laodicea', 'Pergamos',
-  'Smyrna', 'Philadelphia', 'Sardis', 'HeavenlyJerusalem'
+  'Smyrna', 'Philadelphia', 'Sardis', 'heavenly_jerusalem'
 ];
 
 const TEAM_NAMES = {
@@ -27,11 +27,11 @@ const TEAM_NAMES = {
   Smyrna: 'سميرنا',
   Philadelphia: 'فيلادلفيا',
   Sardis: 'ساردس',
-  HeavenlyJerusalem: 'أورشليم السمائية',
+  heavenly_jerusalem: 'أورشليم السمائية',
 };
 
 const isWeekEnabled = (weekNumber) => {
-  const startDate = new Date('2025-06-01');
+  const startDate = new Date('2025-06-13');
   const now = new Date();
   const weekDate = new Date(startDate);
   weekDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
@@ -70,13 +70,11 @@ export default function DirectorDashboard() {
 
       setTeamScores(data);
 
-      // ✅ جلب المستخدمين
       const usersSnap = await getDocs(collection(db, 'users'));
       const usersList = usersSnap.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("📦 All users from Firestore:", usersList); // Debug
       setUsers(usersList);
     };
 
@@ -131,6 +129,8 @@ export default function DirectorDashboard() {
     }
   };
 
+  const normalize = (str) => str?.trim().toLowerCase();
+
   return (
     <div className="dashboard-container">
       <h1 className="title">Director Team Scores Dashboard</h1>
@@ -156,53 +156,61 @@ export default function DirectorDashboard() {
 
       {isWeekEnabled(week) ? (
         <div className="team-scores">
-          {ALL_TEAMS.map((teamKey) => (
-            <div key={teamKey} className="team-card">
-              <div className="team-title">{TEAM_NAMES[teamKey]}</div>
-              <div className="input-row">
-                <div className="input-group">
-                  <label>Exam Score</label>
-                  <input
-                    type="number"
-                    value={teamScores[teamKey]?.examScore ?? ''}
-                    onChange={(e) => handleChange(teamKey, 'examScore', e.target.value || '')}
-                  />
-                </div>
-                <div className="input-group">
-                  <label>Tasks Score</label>
-                  <input
-                    type="number"
-                    value={teamScores[teamKey]?.tasksScore ?? ''}
-                    onChange={(e) => handleChange(teamKey, 'tasksScore', e.target.value || '')}
-                  />
-                </div>
-                <button
-                  className="save-button"
-                  onClick={() => handleSave(teamKey)}
-                >
-                  Save
-                </button>
-              </div>
+          {ALL_TEAMS.map((teamKey) => {
+            const teamUsers = users.filter((u) => normalize(u.teamKey) === normalize(teamKey));
+            const teamLeader = teamUsers.find((u) => u.role === 'teamLeader');
+            const otherUsers = teamUsers.filter((u) => u.role !== 'teamLeader');
 
-              {/* ✅ عرض كل أعضاء الفريق سواء user أو teamLeader */}
-              <div className="team-users">
-                <h4>Team Members:</h4>
-                {users.filter((u) => u.teamKey === teamKey).length === 0 ? (
-                  <p style={{ color: '#999' }}>No users found in this team.</p>
-                ) : (
-                  <ul>
-                    {users
-                      .filter((u) => u.teamKey === teamKey)
-                      .map((u) => (
+            return (
+              <div key={teamKey} className="team-card">
+                <div className="team-title">{TEAM_NAMES[teamKey]}</div>
+                <div className="input-row">
+                  <div className="input-group">
+                    <label>Exam Score</label>
+                    <input
+                      type="number"
+                      value={teamScores[teamKey]?.examScore ?? ''}
+                      onChange={(e) => handleChange(teamKey, 'examScore', e.target.value || '')}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Tasks Score</label>
+                    <input
+                      type="number"
+                      value={teamScores[teamKey]?.tasksScore ?? ''}
+                      onChange={(e) => handleChange(teamKey, 'tasksScore', e.target.value || '')}
+                    />
+                  </div>
+                  <button
+                    className="save-button"
+                    onClick={() => handleSave(teamKey)}
+                  >
+                    Save
+                  </button>
+                </div>
+
+                <div className="team-users">
+                  <h4>Team Members:</h4>
+                  {teamUsers.length === 0 ? (
+                    <p style={{ color: '#999' }}>No users found in this team.</p>
+                  ) : (
+                    <ul>
+                      {teamLeader && (
+                        <li style={{ fontWeight: 'bold', color: '#4a4' }}>
+                          👑 {teamLeader.name} - {teamLeader.role}
+                        </li>
+                      )}
+                      {otherUsers.map((u) => (
                         <li key={u.id}>
-                          <strong>{u.username || 'No Username'}</strong> - {u.email} - {u.grade} - {u.gender} - {u.role}
+                          {u.name} - {u.role}
                         </li>
                       ))}
-                  </ul>
-                )}
+                    </ul>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <p style={{ textAlign: 'center', marginTop: '20px', color: '#555' }}>

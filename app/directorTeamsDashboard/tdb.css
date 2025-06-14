@@ -148,3 +148,52 @@
     max-width: 90%;
   }
 }
+/* باقي التنسيقات زي ما هي */
+
+.team-users {
+  margin-top: 20px;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid #dcdcdc;
+}
+
+.team-users h4 {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.team-users ul {
+  padding-left: 20px;
+  margin: 0;
+  list-style-type: disc;
+}
+
+.team-users li {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #34495e;
+}
+
+/* مفيش مستخدمين */
+.team-users p {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* responsiveness */
+@media (max-width: 768px) {
+  .team-users ul {
+    padding-left: 16px;
+  }
+
+  .team-users li {
+    font-size: 0.9rem;
+  }
+
+  .team-users {
+    padding: 10px;
+  }
+}
