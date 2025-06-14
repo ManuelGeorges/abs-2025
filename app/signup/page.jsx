@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -27,6 +27,16 @@ export default function SignupPage() {
   const [teamKey, setTeamKey] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push("/profile");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSignup = async () => {
     setErrorMessage("");
