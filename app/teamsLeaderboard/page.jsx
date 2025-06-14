@@ -32,7 +32,7 @@ export default function TeamLeaderboardPage() {
 
   useEffect(() => {
     const today = new Date();
-    const startDate = new Date('2025-06-20');
+    const startDate = new Date('2025-06-13');
     const tempWeeks = [];
 
     for (let i = 0; i < 7; i++) {
@@ -115,7 +115,7 @@ export default function TeamLeaderboardPage() {
 
   return (
     <div className="leaderboard-container">
-      <h2 className="leaderboard-title">🏆 Team Leaderboard</h2>
+      <h2 className="leaderboard-title">🏆 Teams Leaderboard</h2>
 
       <div className="week-selector">
         {availableWeeks.map((week) => (
