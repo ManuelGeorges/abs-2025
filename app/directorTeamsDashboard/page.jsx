@@ -11,7 +11,7 @@ import {
   updateDoc,
   addDoc
 } from 'firebase/firestore';
-import './page.css';
+import './tdb.css';
 
 const WEEK_NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 const ALL_TEAMS = [
@@ -42,7 +42,7 @@ export default function DirectorDashboard() {
   const [week, setWeek] = useState(1);
   const [teamScores, setTeamScores] = useState({});
   const [saveMessage, setSaveMessage] = useState('');
-  const [users, setUsers] = useState([]); // ✅ حالة المستخدمين
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchTeamScores = async () => {
@@ -76,6 +76,7 @@ export default function DirectorDashboard() {
         id: doc.id,
         ...doc.data(),
       }));
+      console.log("📦 All users from Firestore:", usersList); // Debug
       setUsers(usersList);
     };
 
@@ -183,18 +184,18 @@ export default function DirectorDashboard() {
                 </button>
               </div>
 
-              {/* ✅ عرض المستخدمين تحت كل فريق */}
+              {/* ✅ عرض كل أعضاء الفريق سواء user أو teamLeader */}
               <div className="team-users">
-                <h4>أعضاء الفريق:</h4>
+                <h4>Team Members:</h4>
                 {users.filter((u) => u.teamKey === teamKey).length === 0 ? (
-                  <p style={{ color: '#999' }}>لا يوجد مستخدمين في هذا الفريق.</p>
+                  <p style={{ color: '#999' }}>No users found in this team.</p>
                 ) : (
                   <ul>
                     {users
                       .filter((u) => u.teamKey === teamKey)
                       .map((u) => (
                         <li key={u.id}>
-                          <strong>{u.name || u.username}</strong> - {u.email} - {u.grade} - {u.gender}
+                          <strong>{u.username || 'No Username'}</strong> - {u.email} - {u.grade} - {u.gender} - {u.role}
                         </li>
                       ))}
                   </ul>

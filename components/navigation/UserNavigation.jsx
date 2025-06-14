@@ -49,13 +49,13 @@ export default function UserNavigation() {
         )}
 
         {role === "teamLeader" && (
-          <Link href="/teamLeaderDashboard">Team Dashboard</Link>
+          <Link href="/teamLeaderDashboard">Team DB</Link>
         )}
 
         {role === "director" && (
           <>
-            <Link href="/directorIndividualDashboard">People Dashboard</Link>
-            <Link href="/directorTeamsDashboard">Teams Dashboard</Link>
+            <Link href="/directorIndividualDashboard">People DB</Link>
+            <Link href="/directorTeamsDashboard">Teams DB</Link>
           </>
         )}
       </nav>
