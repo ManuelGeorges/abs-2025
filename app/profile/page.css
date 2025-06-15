@@ -80,6 +80,57 @@
   color: #333;
 }
 
+.weekly-scores {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease;
+}
+
+.weekly-scores h3 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #333;
+  text-align: center;
+}
+
+.weekly-scores ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.weekly-scores li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 0.6rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.weekly-scores li:hover {
+  background: #e9f5ff;
+  transform: scale(1.02);
+}
+
+.weekly-scores li strong {
+  color: #007bff;
+  min-width: 85px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
 /* كل عنصر تفاصيل */
 .info-item {
   margin-bottom: 1.2rem;

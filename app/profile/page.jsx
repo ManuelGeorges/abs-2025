@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from "react";
 import { auth, db } from "../../lib/firebase";
@@ -21,7 +21,6 @@ export default function ProfilePage() {
       }
 
       try {
-        // تجيب بيانات اليوزر
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -34,9 +33,7 @@ export default function ProfilePage() {
         const userInfo = userSnap.data();
         setUserData(userInfo);
 
-        // لو الrole مش user ما يعرضش الدرجات
         if (userInfo.role === "user") {
-          // تجيب التقارير المعتمدة بس لليوزر ده
           const reportsQuery = query(
             collection(db, "reports"),
             where("userId", "==", user.uid),
@@ -44,17 +41,48 @@ export default function ProfilePage() {
           );
           const reportsSnapshot = await getDocs(reportsQuery);
 
-          const userScores = reportsSnapshot.docs.map((doc) => {
+          const questQuery = query(
+            collection(db, "questScores"),
+            where("userId", "==", user.uid)
+          );
+          const questSnapshot = await getDocs(questQuery);
+
+          const reportMap = {};
+          reportsSnapshot.forEach((doc) => {
             const data = doc.data();
-            // خذ رقم الأسبوع من الحقل weekNumber مباشرة
-            const weekNum = data.weekNumber || "Unknown Week";
-            return {
-              week: `Week ${weekNum}`,
-              score: data.score || 0,
-            };
+            const week = data.weekNumber;
+            reportMap[week] = data.score || 0;
           });
 
-          setScores(userScores);
+          const questMap = {};
+          questSnapshot.forEach((doc) => {
+            const data = doc.data();
+            const date = new Date(data.date);
+            const startDate = new Date("2025-06-13");
+            const diffDays = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
+            const week = Math.floor(diffDays / 7) + 1;
+            if (!questMap[week]) questMap[week] = 0;
+            questMap[week] += data.score || 0;
+          });
+
+          const allWeeks = Array.from(new Set([...Object.keys(reportMap), ...Object.keys(questMap)]));
+          const combined = allWeeks.map((week) => {
+            const w = parseInt(week);
+            const reportScore = reportMap[w] || 0;
+            const questScore = questMap[w] || 0;
+            return {
+              week: `Week ${w}`,
+              reportScore,
+              questScore,
+              totalScore: reportScore + questScore,
+            };
+          }).sort((a, b) => {
+            const n1 = parseInt(a.week.split(" ")[1]);
+            const n2 = parseInt(b.week.split(" ")[1]);
+            return n1 - n2;
+          });
+
+          setScores(combined);
         }
       } catch (error) {
         console.error("🔥 Error fetching data:", error);
@@ -69,11 +97,7 @@ export default function ProfilePage() {
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
-    <div
-      className={`profile-container ${
-        userData?.gender === "female" ? "female-bg" : "male-bg"
-      }`}
-    >
+    <div className={`profile-container ${userData?.gender === "female" ? "female-bg" : "male-bg"}`}>
       <div className="profile-card">
         {userData?.photo ? (
           <img src={userData.photo} alt="Profile" className="profile-photo" />
@@ -108,9 +132,9 @@ export default function ProfilePage() {
               <p>No scores available yet.</p>
             ) : (
               <ul>
-                {scores.map(({ week, score }, i) => (
+                {scores.map(({ week, reportScore, questScore, totalScore }, i) => (
                   <li key={i}>
-                    <strong>{week}:</strong> {score} points
+                    <strong>{week}:</strong> Report: {reportScore}  Quests: {questScore}  Total: {totalScore}
                   </li>
                 ))}
               </ul>
