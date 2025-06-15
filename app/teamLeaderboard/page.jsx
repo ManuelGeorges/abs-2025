@@ -14,7 +14,6 @@ export default function TeamLeaderboardPage() {
   const [availableWeeks, setAvailableWeeks] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
 
-  // تحديد الأسابيع المتاحة بناءً على تاريخ البداية (زي الليدربورد الكبير)
   useEffect(() => {
     const today = new Date();
     const startDate = new Date('2025-06-13');
@@ -29,14 +28,11 @@ export default function TeamLeaderboardPage() {
     setAvailableWeeks(tempWeeks);
   }, []);
 
-  // جلب المستخدم الحالي وتحديد الـteamKey بتاعه
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUserId(user.uid);
-
-        // جلب بيانات المستخدم عشان نجيب teamKey
         const usersSnapshot = await getDocs(
           query(collection(db, 'users'), where('__name__', '==', user.uid))
         );
@@ -55,16 +51,18 @@ export default function TeamLeaderboardPage() {
     return () => unsubscribe();
   }, []);
 
-  // جلب بيانات leaderboard للفريق فقط
   useEffect(() => {
     if (!currentTeamKey || !selectedWeek) return;
 
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        // جلب كل المستخدمين في الفريق
         const usersRef = collection(db, 'users');
-        const usersQuery = query(usersRef, where('teamKey', '==', currentTeamKey));
+        const usersQuery = query(
+          usersRef,
+          where('teamKey', '==', currentTeamKey),
+          where('role', '==', 'user') // ✅ الشرط اللي بيعرض اليوزر بس
+        );
         const usersSnap = await getDocs(usersQuery);
 
         const userIds = usersSnap.docs.map(doc => doc.id);
@@ -74,7 +72,6 @@ export default function TeamLeaderboardPage() {
           userIdToName[doc.id] = data.name || 'No Name';
         });
 
-        // جلب تقارير الأسبوع المحدد لهؤلاء المستخدمين فقط
         const reportsRef = collection(db, 'reports');
         const reportsQuery = query(
           reportsRef,
@@ -83,7 +80,6 @@ export default function TeamLeaderboardPage() {
         );
         const reportsSnap = await getDocs(reportsQuery);
 
-        // جلب نتائج المهمات (quests) لنفس المستخدمين ونفس الأسبوع
         const questRef = collection(db, 'questScores');
         const questSnap = await getDocs(questRef);
 
@@ -103,10 +99,7 @@ export default function TeamLeaderboardPage() {
           }
         });
 
-        // دمج نتائج التقارير والمهام
         const tempData = {};
-
-        // مهم: أولاً نضمن كل أعضاء الفريق موجودين حتى لو مفيش بيانات عندهم
         userIds.forEach(userId => {
           tempData[userId] = {
             userId,
@@ -133,7 +126,6 @@ export default function TeamLeaderboardPage() {
           }
         });
 
-        // تحضير البيانات النهائية للعرض
         const finalData = Object.keys(tempData).map(userId => ({
           userId,
           userName: userIdToName[userId] || 'No Name',
@@ -143,7 +135,6 @@ export default function TeamLeaderboardPage() {
           totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
         }));
 
-        // ترتيب حسب المجموع الكلي (تنازلي)
         finalData.sort((a, b) => b.totalScore - a.totalScore);
 
         setReportData(finalData);
@@ -157,7 +148,6 @@ export default function TeamLeaderboardPage() {
     fetchLeaderboard();
   }, [currentTeamKey, selectedWeek]);
 
-  // ترتيب dense ranking بالظبط زي الليدربورد الكبير
   function getDenseRanks(sortedData) {
     const ranks = [];
     ranks[0] = 1;
@@ -171,30 +161,10 @@ export default function TeamLeaderboardPage() {
     return ranks;
   }
 
-  // فلترة عرض top3 + المستخدم الحالي
-  function filterTop3WithUser(data, currentUserId) {
-    if (!data) return [];
-
-    const ranks = getDenseRanks(data);
-    let top3 = [];
-    let currentUserEntry = null;
-
-    for (let i = 0; i < data.length; i++) {
-      if (ranks[i] <= 3) {
-        top3.push({ ...data[i], rank: ranks[i] });
-      }
-      if (data[i].userId === currentUserId) {
-        currentUserEntry = { ...data[i], rank: ranks[i] };
-      }
-    }
-
-    const userInTop3 = top3.some((entry) => entry.userId === currentUserId);
-    if (!userInTop3 && currentUserEntry) {
-      top3.push(currentUserEntry);
-    }
-
-    return top3;
-  }
+  const ranks = reportData ? getDenseRanks(reportData) : [];
+  const displayedData = reportData
+    ? reportData.map((entry, index) => ({ ...entry, rank: ranks[index] }))
+    : [];
 
   function getRowClass(rank) {
     if (rank === 1) return 'gold';
@@ -202,8 +172,6 @@ export default function TeamLeaderboardPage() {
     if (rank === 3) return 'bronze';
     return '';
   }
-
-  const displayedData = filterTop3WithUser(reportData, currentUserId);
 
   return (
     <div className="leaderboard-container">
@@ -230,7 +198,7 @@ export default function TeamLeaderboardPage() {
               <th className='rank-header'>Rank</th>
               <th>Name</th>
               <th>Team</th>
-              <th>Rep. </th>
+              <th>Rep.</th>
               <th>Quests</th>
               <th>Total</th>
             </tr>
