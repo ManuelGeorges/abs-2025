@@ -126,7 +126,13 @@ export default function LeaderboardPage() {
           totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
         }));
 
-        finalData.sort((a, b) => b.totalScore - a.totalScore);
+        // ✅ ترتيب حسب السكور، ولو نفس السكور يرتبوا أبجديًا بالاسم
+        finalData.sort((a, b) => {
+          if (b.totalScore === a.totalScore) {
+            return a.userName.localeCompare(b.userName);
+          }
+          return b.totalScore - a.totalScore;
+        });
 
         setReportData(finalData);
       } catch (error) {
@@ -210,7 +216,7 @@ export default function LeaderboardPage() {
               <th className='rank-header'>Rank</th>
               <th>Name</th>
               <th>Team</th>
-              <th>Rep. </th>
+              <th>Rep.</th>
               <th>Quests</th>
               <th>Total</th>
             </tr>

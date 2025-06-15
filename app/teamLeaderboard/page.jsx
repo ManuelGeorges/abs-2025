@@ -61,7 +61,7 @@ export default function TeamLeaderboardPage() {
         const usersQuery = query(
           usersRef,
           where('teamKey', '==', currentTeamKey),
-          where('role', '==', 'user') // ✅ الشرط اللي بيعرض اليوزر بس
+          where('role', '==', 'user')
         );
         const usersSnap = await getDocs(usersQuery);
 
@@ -135,7 +135,13 @@ export default function TeamLeaderboardPage() {
           totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
         }));
 
-        finalData.sort((a, b) => b.totalScore - a.totalScore);
+        // ✅ ترتيب حسب السكور ولو متساويين يبقى أبجديًا
+        finalData.sort((a, b) => {
+          if (b.totalScore === a.totalScore) {
+            return a.userName.localeCompare(b.userName);
+          }
+          return b.totalScore - a.totalScore;
+        });
 
         setReportData(finalData);
       } catch (error) {
