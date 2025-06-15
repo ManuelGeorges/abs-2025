@@ -43,9 +43,7 @@ export default function LeaderboardPage() {
       try {
         const reportsRef = collection(db, 'reports');
         const questRef = collection(db, 'questScores');
-        const usersRef = collection(db, 'users');
 
-        // جلب تقارير الأسبوع المحدد
         const reportsQuery = query(reportsRef, where('weekNumber', '==', Number(selectedWeek)));
         const reportsSnap = await getDocs(reportsQuery);
 
@@ -55,7 +53,6 @@ export default function LeaderboardPage() {
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(endOfWeek.getDate() + 6);
 
-        // جلب نتائج المهمات في نفس الأسبوع
         const questSnap = await getDocs(questRef);
 
         const questScores = {};
@@ -68,7 +65,6 @@ export default function LeaderboardPage() {
           }
         });
 
-        // دمج نتائج التقارير والمهام
         const tempData = {};
         reportsSnap.forEach((doc) => {
           const data = doc.data();
@@ -96,19 +92,30 @@ export default function LeaderboardPage() {
           }
         });
 
-        // جلب بيانات المستخدمين للعرض
         const allUserIds = Object.keys(tempData);
-        const chunkedUserIds = allUserIds.slice(0, 10); // ملاحظة: ممكن تحتاج تحسين لو أكتر من 10
 
-        const usersSnap = await getDocs(query(collection(db, 'users'), where('__name__', 'in', chunkedUserIds)));
+        // ✅ جلب بيانات المستخدمين على دفعات chunks of 10
         const usersMap = {};
-        usersSnap.forEach((doc) => {
-          const data = doc.data();
-          usersMap[doc.id] = {
-            name: data.name ?? 'No Name',
-            teamKey: data.teamKey ?? 'No Team',
-          };
-        });
+        function chunkArray(array, size) {
+          const chunks = [];
+          for (let i = 0; i < array.length; i += size) {
+            chunks.push(array.slice(i, i + size));
+          }
+          return chunks;
+        }
+
+        const chunks = chunkArray(allUserIds, 10);
+        for (const chunk of chunks) {
+          const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
+          const snap = await getDocs(q);
+          snap.forEach((doc) => {
+            const data = doc.data();
+            usersMap[doc.id] = {
+              name: data.name ?? 'No Name',
+              teamKey: data.teamKey ?? 'No Team',
+            };
+          });
+        }
 
         const finalData = allUserIds.map((userId) => ({
           userId,
@@ -132,7 +139,6 @@ export default function LeaderboardPage() {
     fetchLeaderboard();
   }, [selectedWeek]);
 
-  // ترتيب dense ranking:  
   function getDenseRanks(sortedData) {
     const ranks = [];
     ranks[0] = 1;
@@ -146,7 +152,6 @@ export default function LeaderboardPage() {
     return ranks;
   }
 
-  // فلترة عرض فقط top 3 + المستخدم الحالي حتى لو مش من الtop3
   function filterTop3WithUser(data, currentUserId) {
     if (!data) return [];
 
@@ -214,9 +219,7 @@ export default function LeaderboardPage() {
             {displayedData.map((player) => (
               <tr
                 key={player.userId}
-                className={`${getRowClass(player.rank)} ${
-                  player.userId === currentUserId ? 'highlight' : ''
-                }`}
+                className={`${getRowClass(player.rank)} ${player.userId === currentUserId ? 'highlight' : ''}`}
               >
                 <td>{player.rank}</td>
                 <td>{player.userName}{player.userId === currentUserId && ' ⭐'}</td>

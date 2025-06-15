@@ -14,6 +14,7 @@ export default function TeamLeaderboardPage() {
   const [availableWeeks, setAvailableWeeks] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
 
+  // تحديد الأسابيع المتاحة بناءً على تاريخ البداية (زي الليدربورد الكبير)
   useEffect(() => {
     const today = new Date();
     const startDate = new Date('2025-06-13');
@@ -28,12 +29,14 @@ export default function TeamLeaderboardPage() {
     setAvailableWeeks(tempWeeks);
   }, []);
 
+  // جلب المستخدم الحالي وتحديد الـteamKey بتاعه
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUserId(user.uid);
 
+        // جلب بيانات المستخدم عشان نجيب teamKey
         const usersSnapshot = await getDocs(
           query(collection(db, 'users'), where('__name__', '==', user.uid))
         );
@@ -52,19 +55,16 @@ export default function TeamLeaderboardPage() {
     return () => unsubscribe();
   }, []);
 
+  // جلب بيانات leaderboard للفريق فقط
   useEffect(() => {
     if (!currentTeamKey || !selectedWeek) return;
 
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        // جلب كل المستخدمين في الفريق اللي role بتاعهم user فقط
+        // جلب كل المستخدمين في الفريق
         const usersRef = collection(db, 'users');
-        const usersQuery = query(
-          usersRef,
-          where('teamKey', '==', currentTeamKey),
-          where('role', '==', 'user')
-        );
+        const usersQuery = query(usersRef, where('teamKey', '==', currentTeamKey));
         const usersSnap = await getDocs(usersQuery);
 
         const userIds = usersSnap.docs.map(doc => doc.id);
@@ -103,19 +103,22 @@ export default function TeamLeaderboardPage() {
           }
         });
 
+        // دمج نتائج التقارير والمهام
         const tempData = {};
+
+        // مهم: أولاً نضمن كل أعضاء الفريق موجودين حتى لو مفيش بيانات عندهم
+        userIds.forEach(userId => {
+          tempData[userId] = {
+            userId,
+            reportScore: 0,
+            questScore: 0,
+          };
+        });
+
         reportsSnap.forEach(doc => {
           const data = doc.data();
           const userId = data.userId;
-          if (!tempData[userId]) {
-            tempData[userId] = {
-              userId,
-              reportScore: Number(data.score) || 0,
-              questScore: 0,
-            };
-          } else {
-            tempData[userId].reportScore = Number(data.score) || 0;
-          }
+          tempData[userId].reportScore = Number(data.score) || 0;
         });
 
         Object.keys(questScores).forEach(userId => {
@@ -130,19 +133,17 @@ export default function TeamLeaderboardPage() {
           }
         });
 
-        // جهز البيانات النهائية للعرض مع ضمان وجود كل المستخدمين حتى لو بدون نقاط
-        const finalData = userIds.map(userId => {
-          const userData = tempData[userId] || { reportScore: 0, questScore: 0 };
-          return {
-            userId,
-            userName: userIdToName[userId] || 'No Name',
-            userTeam: currentTeamKey,
-            reportScore: userData.reportScore,
-            questScore: userData.questScore,
-            totalScore: (userData.reportScore || 0) + (userData.questScore || 0),
-          };
-        });
+        // تحضير البيانات النهائية للعرض
+        const finalData = Object.keys(tempData).map(userId => ({
+          userId,
+          userName: userIdToName[userId] || 'No Name',
+          userTeam: currentTeamKey,
+          reportScore: tempData[userId].reportScore,
+          questScore: tempData[userId].questScore,
+          totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
+        }));
 
+        // ترتيب حسب المجموع الكلي (تنازلي)
         finalData.sort((a, b) => b.totalScore - a.totalScore);
 
         setReportData(finalData);
@@ -156,6 +157,7 @@ export default function TeamLeaderboardPage() {
     fetchLeaderboard();
   }, [currentTeamKey, selectedWeek]);
 
+  // ترتيب dense ranking بالظبط زي الليدربورد الكبير
   function getDenseRanks(sortedData) {
     const ranks = [];
     ranks[0] = 1;
@@ -169,6 +171,7 @@ export default function TeamLeaderboardPage() {
     return ranks;
   }
 
+  // فلترة عرض top3 + المستخدم الحالي
   function filterTop3WithUser(data, currentUserId) {
     if (!data) return [];
 
