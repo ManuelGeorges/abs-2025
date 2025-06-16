@@ -73,8 +73,8 @@ export default function UserNavigation() {
 
         {role === "secretariat" && (
           <>
-            <Link href="/qr-generator">QR Code</Link>
-            <Link href="/attendance-panel">Att. Panel</Link>
+            <Link href="/secretariat/Qr-code">QR Code</Link>
+            <Link href="/secretariat/attendancePanel">Att. Panel</Link>
           </>
         )}
       </nav>
