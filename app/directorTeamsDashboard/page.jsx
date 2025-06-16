@@ -158,7 +158,7 @@ export default function DirectorDashboard() {
         <div className="team-scores">
           {ALL_TEAMS.map((teamKey) => {
             const teamUsers = users.filter((u) => normalize(u.teamKey) === normalize(teamKey));
-            const teamLeader = teamUsers.find((u) => u.role === 'teamLeader');
+            const teamLeaders = teamUsers.filter((u) => u.role === 'teamLeader');
             const otherUsers = teamUsers.filter((u) => u.role !== 'teamLeader');
 
             return (
@@ -195,11 +195,11 @@ export default function DirectorDashboard() {
                     <p style={{ color: '#999' }}>No users found in this team.</p>
                   ) : (
                     <ul>
-                      {teamLeader && (
-                        <li style={{ fontWeight: 'bold', color: '#4a4' }}>
-                          👑 {teamLeader.name} - {teamLeader.role}
+                      {teamLeaders.map((leader) => (
+                        <li key={leader.id} style={{ fontWeight: 'bold', color: '#4a4' }}>
+                          👑 {leader.name} - {leader.role}
                         </li>
-                      )}
+                      ))}
                       {otherUsers.map((u) => (
                         <li key={u.id}>
                           {u.name} - {u.role}
