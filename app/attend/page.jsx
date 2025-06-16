@@ -16,8 +16,6 @@ import { onAuthStateChanged } from 'firebase/auth';
 import './page.css';
 
 export default function AttendPage() {
-    console.log('🎬 AttendPage component rendered');
-
   const [status, setStatus] = useState('Checking attendance status...');
   const [statusType, setStatusType] = useState('loading'); // success | error | info | loading
   const [userData, setUserData] = useState(null);

@@ -31,24 +31,24 @@ export default function UserNavigation() {
 
   return (
     <div>
-      {/* ✅ Top Navigation (ثابت للكل ما عدا director ملوش team leaderboard) */}
+      {/* ✅ Top Navigation */}
       <nav className="top-nav">
-        {role === "quest-admin" && (
+        {(role === "quest-admin" || role === "secretariat") && (
           <>
             <Link href="/leaderboard">L.B</Link>
             <Link href="/teamsLeaderboard">Teams L.B</Link>
           </>
         )}
 
-        {role !== "director" && role !== "quest-admin" && (
+        {role !== "director" && role !== "quest-admin" && role !== "secretariat" && (
           <Link href="/teamLeaderboard/">Friends L.B</Link>
         )}
 
-        {role !== "quest-admin" && <Link href="/teamsLeaderboard">Teams L.B</Link>}
-        {role !== "quest-admin" && <Link href="/leaderboard">L.B</Link>}
+        {role !== "quest-admin" && role !== "secretariat" && <Link href="/teamsLeaderboard">Teams L.B</Link>}
+        {role !== "quest-admin" && role !== "secretariat" && <Link href="/leaderboard">L.B</Link>}
       </nav>
 
-      {/* ✅ Bottom Navigation (حسب الدور) */}
+      {/* ✅ Bottom Navigation */}
       <nav className="bottom-nav">
         <Link href="/profile">Profile</Link>
 
@@ -68,8 +68,13 @@ export default function UserNavigation() {
         )}
 
         {role === "quest-admin" && (
+          <Link href="/questAdminDashboard">Questions DB</Link>
+        )}
+
+        {role === "secretariat" && (
           <>
-            <Link href="/questAdminDashboard">Questions DB</Link>
+            <Link href="/qr-generator">QR Code</Link>
+            <Link href="/attendance-panel">Att. Panel</Link>
           </>
         )}
       </nav>
