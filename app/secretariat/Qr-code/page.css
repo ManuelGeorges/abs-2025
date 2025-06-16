@@ -1,0 +1,91 @@
+.attend-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: #f0f4f8;
+  padding: 2rem;
+}
+
+.attend-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.attend-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.attend-field {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.attend-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #444;
+}
+
+.attend-field input,
+.attend-field select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.attend-field input:focus,
+.attend-field select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.attend-button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.attend-button.start {
+  background-color: #28a745;
+  color: white;
+}
+
+.attend-button.end {
+  background-color: #dc3545;
+  color: white;
+}
+
+.attend-button:hover {
+  opacity: 0.9;
+}
+
+.attend-status {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+  font-size: 1.2rem;
+}

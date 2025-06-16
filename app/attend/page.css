@@ -1,0 +1,59 @@
+.attend-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+  padding: 1rem;
+}
+
+.attend-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.attend-card h1 {
+  font-size: 1.8rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.attend-status {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.attend-status.loading {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.attend-status.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.attend-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.attend-status.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.attend-user {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
