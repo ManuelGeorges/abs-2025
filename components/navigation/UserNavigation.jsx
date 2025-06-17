@@ -46,6 +46,12 @@ export default function UserNavigation() {
 
         {role !== "quest-admin" && role !== "secretariat" && <Link href="/teamsLeaderboard">Teams L.B</Link>}
         {role !== "quest-admin" && role !== "secretariat" && <Link href="/leaderboard">L.B</Link>}
+        {role === "director" && (
+          <>
+            <Link href="/secretariat/Qr-code">Qr Code</Link>
+            <Link href="/secretariat/attendancePanel">At.panelt</Link>
+          </>
+        )}
       </nav>
 
       {/* ✅ Bottom Navigation */}
@@ -64,6 +70,7 @@ export default function UserNavigation() {
           <>
             <Link href="/directorIndividualDashboard">People DB</Link>
             <Link href="/directorTeamsDashboard">Teams DB</Link>
+
           </>
         )}
 
