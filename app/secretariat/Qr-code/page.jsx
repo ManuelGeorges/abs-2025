@@ -29,22 +29,25 @@ export default function AttendanceControlPage() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userSnap = await getDoc(doc(db, 'users', user.uid));
-        if (userSnap.exists() && userSnap.data().role === 'secretariat' || role === 'director') {
-          setAllowed(true);
+        if (userSnap.exists()) {
+          const role = userSnap.data().role;
+          if (role === 'secretariat' || role === 'director') {
+            setAllowed(true);
 
-          // ✅ التحقق من وجود جلسة حضور مفعّلة حاليًا
-          const q = query(collection(db, 'attendanceWindows'), where('active', '==', true));
-          const snapshot = await getDocs(q);
-          if (!snapshot.empty) {
-            const activeDoc = snapshot.docs[0];
-            setCurrentDocId(activeDoc.id);
-            const data = activeDoc.data();
-            setWeek(data.week);
-            setType(data.type);
-            setStatus('✅ Attendance window is currently active.');
+            // ✅ التحقق من وجود جلسة حضور مفعّلة حاليًا
+            const q = query(collection(db, 'attendanceWindows'), where('active', '==', true));
+            const snapshot = await getDocs(q);
+            if (!snapshot.empty) {
+              const activeDoc = snapshot.docs[0];
+              setCurrentDocId(activeDoc.id);
+              const data = activeDoc.data();
+              setWeek(data.week);
+              setType(data.type);
+              setStatus('✅ Attendance window is currently active.');
+            }
+          } else {
+            setStatus('🚫 You are not authorized to access this page.');
           }
-        } else {
-          setStatus('🚫 You are not authorized to access this page.');
         }
       }
     });
