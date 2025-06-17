@@ -29,7 +29,7 @@ export default function AttendanceControlPage() {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userSnap = await getDoc(doc(db, 'users', user.uid));
-        if (userSnap.exists() && userSnap.data().role === 'secretariat') {
+        if (userSnap.exists() && userSnap.data().role === 'secretariat' || role === 'director') {
           setAllowed(true);
 
           // ✅ التحقق من وجود جلسة حضور مفعّلة حاليًا

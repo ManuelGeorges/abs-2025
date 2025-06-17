@@ -24,7 +24,7 @@ nav {
 }
 
 .top-nav {
-  position: sticky;
+  position: fixed;
   top: 10px;
   z-index: 1000;
   animation: slideDownFade 0.7s ease forwards;
