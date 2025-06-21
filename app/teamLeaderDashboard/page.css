@@ -1,323 +1,193 @@
-/* Leaderboard Container */
-.leaderboard-container {
-  max-width: 800px;
+/* الحاوية الرئيسية */
+.dashboard-container {
+  max-width: 900px;
   margin: 50px auto;
-  padding: 40px 60px;
-  background: linear-gradient(145deg, #f0f4ff, #d9e6ff);
-  border-radius: 30px;
-  box-shadow: 0 20px 50px rgba(30, 60, 120, 0.25);
+  padding: 40px 30px;
+  background: #f0f4ff;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(30, 60, 120, 0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: all 0.3s ease;
 }
 
-/* Title */
-.leaderboard-title {
+/* عنوان الصفحة */
+.dashboard-container h2 {
   text-align: center;
-  font-size: 38px;
-  color: #1e40af;
-  margin-bottom: 40px;
-  font-weight: 800;
-  letter-spacing: 1.8px;
-  text-shadow: 2px 2px 7px rgba(30, 64, 175, 0.4);
+  font-size: 32px;
+  color: #1e3a8a;
+  margin-bottom: 30px;
+  font-weight: bold;
 }
 
-/* Leaderboard Table */
-.leaderboard-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 15px;
+/* رسالة التنبيه */
+.message {
   text-align: center;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 19px;
-  overflow: hidden;
-  border-radius: 20px;
-  table-layout: fixed;
-}
-
-.leaderboard-table thead tr {
-  background: linear-gradient(90deg, #2563eb, #3b82f6);
-  color: #fff;
-  font-weight: 700;
-  font-size: 22px;
-  border-radius: 20px 20px 0 0;
-  user-select: none;
-}
-
-.leaderboard-table th,
-.leaderboard-table td {
-  padding: 20px 18px;
-  word-wrap: break-word;
-}
-
-.leaderboard-table tbody tr {
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(96, 149, 250, 0.15);
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  cursor: default;
-}
-
-.leaderboard-table tbody tr:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 60px rgba(59, 130, 246, 0.35);
-}
-
-/* Rank Styles */
-.gold {
-  background: linear-gradient(135deg, #fff8dc, #ffe680);
-  color: #b27c00;
-  font-weight: 700;
-  border-left: 10px solid #ffd600;
-  box-shadow: 0 10px 30px #ffd600bb;
-}
-
-.silver {
-  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
-  color: #4a4a4a;
-  font-weight: 700;
-  border-left: 10px solid #b0bec5;
-  box-shadow: 0 10px 30px #aab8c6cc;
-}
-
-.bronze {
-  background: linear-gradient(135deg, #d7ccc8, #c09b79);
-  color: #5d3a1a;
-  font-weight: 700;
-  border-left: 10px solid #a67c3d;
-  box-shadow: 0 10px 30px #a67c3dcc;
-}
-
-.highlight {
-  background: #d4edda;
-  font-weight: 700;
-  border-left: 10px solid #28a745;
-  box-shadow: 0 8px 25px #28a745bb;
-  color: #155724;
-}
-
-.spacer-row td {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  height: 20px;
-}
-
-.loading-text {
-  text-align: center;
-  font-size: 22px;
-  color: #4a4a4a;
-  margin-top: 120px;
-}
-
-.you {
-  font-size: 15px;
-  color: #2e7d32;
-  font-style: italic;
-  margin-left: 8px;
-}
-
-/* Score column style */
-.leaderboard-table tbody tr td:nth-child(3) {
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
   font-weight: 500;
-  font-style: italic;
-  color: #334155;
 }
 
-/* Week Selector Buttons */
-.week-selector {
+/* Loading Style */
+.loading {
+  text-align: center;
+  font-size: 22px;
+  padding: 100px 0;
+  color: #64748b;
+}
+
+/* كارت التقرير */
+.report-card {
+  background: white;
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  padding: 20px 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.report-card:hover {
+  transform: translateY(-4px);
+}
+
+/* اسم المخدوم */
+.report-card h3 {
+  margin-bottom: 15px;
+  color: #1e40af;
+  font-size: 22px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 5px;
+}
+
+/* قائمة الإجابات */
+.answers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.answers-list li {
+  margin: 12px 0;
+  font-size: 17px;
+}
+
+.answers-list strong {
+  display: inline-block;
+  min-width: 250px;
+  color: #1e293b;
+}
+
+/* ألوان الإجابات */
+.answers-list span {
+  font-weight: 600;
+}
+
+.answers-list span.yes {
+  color: #16a34a;
+}
+
+.answers-list span.no {
+  color: #dc2626;
+}
+
+/* مجموعة الأزرار */
+.btn-group {
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
 }
 
-.week-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid #007bff;
-  color: #007bff;
-  border-radius: 9999px;
+.btn {
+  padding: 10px 16px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
-.week-btn:hover:not(:disabled) {
-  background-color: #007bff;
+.edit-btn {
+  background-color: #facc15;
+  color: #4b4000;
+}
+
+.edit-btn:hover {
+  background-color: #eab308;
+}
+
+.save-btn {
+  background-color: #22c55e;
   color: white;
 }
 
-.week-btn.selected {
-  background-color: #007bff;
+.save-btn:hover {
+  background-color: #16a34a;
+}
+
+.cancel-btn {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.cancel-btn:hover {
+  background-color: #d1d5db;
+}
+
+.approve-btn {
+  background-color: #3b82f6;
   color: white;
 }
 
-.week-btn:disabled {
-  border-color: #ccc;
-  color: #aaa;
-  cursor: not-allowed;
-  background-color: #f0f0f0;
+.approve-btn:hover {
+  background-color: #2563eb;
 }
 
-.yes {
-  color: green;
-  font-weight: bold;
+/* التقرير غير المقدم */
+.no-report {
+  color: #6b7280;
+  font-style: italic;
+  padding: 10px 0;
 }
 
-.no {
-  color: red;
-  font-weight: bold;
+/* اختيارات الإجابة */
+select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
+  background-color: #f9fafb;
 }
 
-.no-data {
-  text-align: center;
-  color: gray;
-  margin-top: 1rem;
-}
-
-/* ====== Responsive Media Queries ====== */
+/* Responsive */
 @media (max-width: 768px) {
-  .leaderboard-container {
-    padding: 30px 20px;
-  }
-
-  .leaderboard-title {
-    font-size: 28px;
-  }
-
-  .leaderboard-table {
-    font-size: 16px;
-  }
-
-  .leaderboard-table thead tr {
+  .report-card h3 {
     font-size: 18px;
   }
 
-  .leaderboard-table th,
-  .leaderboard-table td {
-    padding: 12px 10px;
+  .answers-list strong {
+    min-width: unset;
+    display: block;
+    margin-bottom: 4px;
   }
 
-  .loading-text {
-    font-size: 18px;
+  .answers-list li {
+    font-size: 15px;
   }
 
-  .you {
-    font-size: 13px;
+  .btn-group {
+    flex-direction: column;
   }
 
-  .week-btn {
-    padding: 8px 14px;
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .leaderboard-title {
-    font-size: 22px;
+  .btn {
+    width: 100%;
+    text-align: center;
   }
 
-  .leaderboard-table {
-    font-size: 14px;
+  .dashboard-container h2 {
+    font-size: 24px;
   }
-
-  .leaderboard-table thead tr {
-    font-size: 16px;
-  }
-
-  .loading-text {
-    font-size: 16px;
-  }
-
-  .you {
-    font-size: 12px;
-  }
-
-  .week-btn {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-}
-
-/* أهم تعديل على الأعمدة عشان الكلمات تلتف بدل ما تتقطع */
-.leaderboard-table th,
-.leaderboard-table td {
-  padding: 12px 10px;
-  word-wrap: break-word;       /* السماح بالتفاف الكلمة */
-  word-break: break-word;      /* كسر الكلمات الطويلة */
-  white-space: normal;         /* عشان الكلام يلتف */
-}
-
-/* نعدل تاني على الجدول عشان يبقى responsive أكتر */
-.leaderboard-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 15px;
-  text-align: center;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 18px;
-  overflow-x: auto;       /* لو الجدول طويل يسمح بالتمرير الأفقي */
-  border-radius: 20px;
-  table-layout: auto;     /* خلي الجدول متجاوب مش ثابت */
-}
-
-/* في الميديا كويريز، نقلل padding وخففنا حجم الخط */
-@media (max-width: 768px) {
-  .leaderboard-container {
-    padding: 20px 15px;
-  }
-
-  .leaderboard-title {
-    font-size: 26px;
-  }
-
-  .leaderboard-table {
-    font-size: 14px;
-  }
-
-  .leaderboard-table th,
-  .leaderboard-table td {
-    padding: 8px 6px;
-    font-size: .8em;
-  }
-
-  .week-btn {
-    padding: 7px 12px;
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 480px) {
-  .leaderboard-container {
-    padding: 15px 10px;
-  }
-
-  .leaderboard-title {
-    font-size: 20px;
-  }
-
-  .leaderboard-table {
-    font-size: 12px;
-  }
-
-  .leaderboard-table th,
-  .leaderboard-table td {
-    padding: 6px 3px;
-  }
-  .leaderboard-table th {
-    font-size: .5em;
-    text-wrap: nowrap; /* منع التفاف النص في العناوين */
-  }
-
-  .week-btn {
-    padding: 5px 8px;
-    font-size: 11px;
-  }
-}
-
-.rank-header{
-  white-space: nowrap; /* منع التفاف النص */
-  width: 80px;
 }
