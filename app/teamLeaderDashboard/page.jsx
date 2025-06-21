@@ -52,7 +52,7 @@ export default function TeamDashboard() {
 
         const userData = userSnap.data();
 
-        if (userData.role !== "team_leader") {
+        if (userData.role !== "teamLeader") {
           setCurrentUser(null);
           setLoading(false);
           return;
@@ -77,7 +77,7 @@ export default function TeamDashboard() {
         reportsSnapshot.forEach((doc) => {
           const data = doc.data();
           if (data.teamKey === userData.teamKey && data.approved !== true) {
-            reportData[data.userId] = { ...data, id: doc.id };
+            reportData[doc.id] = { ...data, id: doc.id };
           }
         });
 
@@ -98,7 +98,7 @@ export default function TeamDashboard() {
     try {
       const reportRef = doc(db, "reports", reportId);
       await updateDoc(reportRef, { answers: newAnswers });
-      setMessage("Report updated successfully!");
+      setMessage("تم تعديل التقرير بنجاح");
 
       setReports((prev) => ({
         ...prev,
@@ -108,39 +108,36 @@ export default function TeamDashboard() {
         },
       }));
     } catch (error) {
-      setMessage("Failed to update report.");
+      setMessage("فشل تعديل التقرير.");
       console.error(error);
     }
   };
 
-  const handleApprove = async (reportId, userId) => {
+  const handleApprove = async (reportId) => {
     try {
       const reportRef = doc(db, "reports", reportId);
       const reportSnap = await getDoc(reportRef);
       const reportData = reportSnap.data();
       const answers = reportData.answers || {};
 
-      // حساب الدرجات
-// حساب الدرجات الجديدة
-    const scores = {
-      "هل قمت بحضور قداس في الإسبوع؟": 0,
-      "هل اعترفت على مدار الاسبوعين السابقين؟": 0,
-      "هل قمت بحضور التسبحة التسبحة؟": 0,
-      "هل قمت بقراءة الجزء المقرر عليك؟": 10,
-      "هل قمت بنسخ الجزء المقرر عليك؟": 10,
-      "هل حضرت الشرح؟": 5,
-      "هل حضرت المسابقات؟": 5,
-      "هل أتممت المهمة المقررة عليك؟": 20,
-      "هل قمت بحفظ المزمور؟": 10,
-    };
-
+      const scores = {
+        "هل قمت بحضور قداس في الإسبوع؟": 0,
+        "هل اعترفت على مدار الاسبوعين السابقين؟": 0,
+        "هل حضرت التسبحة؟": 0,
+        "هل قمت بقراءة الجزء المقرر عليك؟": 10,
+        "هل قمت بنسخ الجزء المقرر عليك؟": 10,
+        "هل حضرت الشرح؟": 5,
+        "هل حضرت المسابقات؟": 5,
+        "هل أتممت المهمة المقررة عليك؟": 20,
+        "هل قمت بحفظ المزمور؟": 10,
+      };
 
       let totalScore = 0;
 
       questions.forEach((q, index) => {
         const key = `question${index + 1}`;
         if (answers[key] === "yes") {
-          totalScore += scores[q];
+          totalScore += scores[q] || 0;
         }
       });
 
@@ -149,32 +146,34 @@ export default function TeamDashboard() {
         score: totalScore,
       });
 
-      setMessage("Report approved and score calculated!");
+      setMessage("تمت الموافقة على التقرير وحساب الدرجات!");
 
       setReports((prev) => {
         const updated = { ...prev };
-        delete updated[userId];
+        delete updated[reportId];
         return updated;
       });
     } catch (error) {
-      setMessage("Failed to approve report.");
+      setMessage("فشل في الموافقة على التقرير.");
       console.error(error);
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (!currentUser) return <div className="loading">Access Denied</div>;
+  if (loading) return <div className="loading">...جاري التحميل</div>;
+  if (!currentUser) return <div className="loading">غير مصرح بالدخول</div>;
 
   return (
     <div className="dashboard-container">
-      <h2>Team {currentUser.teamKey} Reports</h2>
+      <h2>تقارير الفريق {currentUser.teamKey}</h2>
       {message && <div className="message">{message}</div>}
 
       {teamMembers.length === 0 ? (
-        <p>No team members found</p>
+        <p>لا يوجد أعضاء في الفريق</p>
       ) : (
         teamMembers.map((member) => {
-          const report = reports[member.id];
+          const report = Object.values(reports).find(
+            (r) => r.userId === member.id
+          );
           return (
             report && (
               <ReportCard
@@ -183,7 +182,7 @@ export default function TeamDashboard() {
                 report={report}
                 questions={questions}
                 onEdit={handleEdit}
-                onApprove={() => handleApprove(report.id, member.id)}
+                onApprove={() => handleApprove(report.id)}
               />
             )
           );
@@ -255,7 +254,7 @@ function ReportCard({ member, report, questions, onEdit, onApprove }) {
           })}
         </ul>
       ) : (
-        <p className="no-report">No report submitted</p>
+        <p className="no-report">لا يوجد تقرير</p>
       )}
 
       {report && (
@@ -263,7 +262,7 @@ function ReportCard({ member, report, questions, onEdit, onApprove }) {
           {isEditing ? (
             <>
               <button className="btn save-btn" onClick={saveEdit}>
-                Save
+                حفظ
               </button>
               <button
                 className="btn cancel-btn"
@@ -272,17 +271,17 @@ function ReportCard({ member, report, questions, onEdit, onApprove }) {
                   setAnswers(report.answers);
                 }}
               >
-                Cancel
+                إلغاء
               </button>
             </>
           ) : (
             <>
               <button className="btn edit-btn" onClick={() => setIsEditing(true)}>
-                Edit
+                تعديل
               </button>
               {!report.approved && (
                 <button className="btn approve-btn" onClick={onApprove}>
-                  Approve
+                  موافقة
                 </button>
               )}
             </>
