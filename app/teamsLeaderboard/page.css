@@ -1,5 +1,5 @@
-/* Leaderboard Container */
-.leaderboard-container {
+/* Teams Leaderboard Container */
+.teams-leaderboard-container {
   max-width: 800px;
   margin: 50px auto;
   padding: 40px 60px;
@@ -11,7 +11,7 @@
 }
 
 /* Title */
-.leaderboard-title {
+.teams-leaderboard-title {
   text-align: center;
   font-size: 38px;
   color: #1e40af;
@@ -22,7 +22,7 @@
 }
 
 /* Leaderboard Table */
-.leaderboard-table {
+.teams-leaderboard-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 15px;
@@ -35,7 +35,7 @@
   table-layout: fixed;
 }
 
-.leaderboard-table thead tr {
+.teams-leaderboard-table thead tr {
   background: linear-gradient(90deg, #2563eb, #3b82f6);
   color: #fff;
   font-weight: 700;
@@ -44,20 +44,22 @@
   user-select: none;
 }
 
-.leaderboard-table th,
-.leaderboard-table td {
+.teams-leaderboard-table th,
+.teams-leaderboard-table td {
   padding: 20px 18px;
   word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 
-.leaderboard-table tbody tr {
+.teams-leaderboard-table tbody tr {
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(96, 149, 250, 0.15);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   cursor: default;
 }
 
-.leaderboard-table tbody tr:hover {
+.teams-leaderboard-table tbody tr:hover {
   transform: translateY(-8px);
   box-shadow: 0 25px 60px rgba(59, 130, 246, 0.35);
 }
@@ -117,161 +119,14 @@
 }
 
 /* Score column style */
-.leaderboard-table tbody tr td:nth-child(3) {
+.teams-leaderboard-table tbody tr td:nth-child(3) {
   font-weight: 500;
   font-style: italic;
   color: #334155;
 }
 
 /* Week Selector Buttons */
-.week-selector {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.week-button {
-  background-color: #e0ecff;
-  border: 2px solid #2563eb;
-  color: #2563eb;
-  padding: 10px 18px;
-  margin: 0 5px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.week-button:hover,
-.week-button.active-week {
-  background-color: #2563eb;
-  color: #ffffff;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-}
-
-/* ==== Disabled Week Button ==== */
-.week-button:disabled {
-  background-color: #f1f5f9;
-  border: 2px dashed #94a3b8;
-  color: #94a3b8;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-/* Navbar */
-.navbar {
-  width: 100%;
-  background-color: #1e3a8a;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
-
-.navbar .logo {
-  font-size: 26px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 1.5px;
-}
-
-.navbar .nav-links {
-  display: flex;
-  gap: 25px;
-}
-
-.navbar .nav-links a {
-  color: #ffffffcc;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
-}
-
-.navbar .nav-links a:hover {
-  color: #fff;
-  transform: translateY(-2px);
-  text-shadow: 0 1px 5px #ffffff44;
-}
-
-/* ===== Responsive Styling (Media Queries) ===== */
-@media (max-width: 768px) {
-  .leaderboard-container {
-    padding: 30px 20px;
-  }
-
-  .leaderboard-title {
-    font-size: 28px;
-  }
-
-  .leaderboard-table {
-    font-size: 16px;
-  }
-
-  .leaderboard-table thead tr {
-    font-size: 18px;
-  }
-
-  .leaderboard-table th,
-  .leaderboard-table td {
-    padding: 12px;
-  }
-
-  .navbar {
-    flex-direction: column;
-    padding: 10px 20px;
-  }
-
-  .navbar .logo {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
-  .navbar .nav-links {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .week-button {
-    padding: 8px 12px;
-    font-size: 14px;
-  }
-
-  .loading-text {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .leaderboard-title {
-    font-size: 24px;
-  }
-
-  .leaderboard-table {
-    font-size: 14px;
-  }
-
-  .week-button {
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-
-  .navbar .logo {
-    font-size: 20px;
-  }
-
-  .navbar .nav-links a {
-    font-size: 14px;
-  }
-}
-
-.week-selector {
+.teams-week-selector {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -279,7 +134,7 @@
   margin-bottom: 20px;
 }
 
-.week-btn {
+.teams-week-btn {
   padding: 10px 20px;
   background-color: transparent;
   border: 2px solid #007bff;
@@ -290,19 +145,104 @@
   cursor: pointer;
 }
 
-.week-btn:hover:not(:disabled) {
+.teams-week-btn:hover:not(:disabled) {
   background-color: #007bff;
   color: white;
 }
 
-.week-btn.selected {
+.teams-week-btn.selected {
   background-color: #007bff;
   color: white;
 }
 
-.week-btn:disabled {
+.teams-week-btn:disabled {
   border-color: #ccc;
   color: #aaa;
   cursor: not-allowed;
   background-color: #f0f0f0;
+}
+
+.yes {
+  color: green;
+  font-weight: bold;
+}
+
+.no {
+  color: red;
+  font-weight: bold;
+}
+
+.no-data {
+  text-align: center;
+  color: gray;
+  margin-top: 1rem;
+}
+
+/* ====== Responsive Media Queries ====== */
+@media (max-width: 768px) {
+  .teams-leaderboard-container {
+    padding: 30px 20px;
+  }
+
+  .teams-leaderboard-title {
+    font-size: 28px;
+  }
+
+  .teams-leaderboard-table {
+    font-size: 16px;
+  }
+
+  .teams-leaderboard-table thead tr {
+    font-size: 18px;
+  }
+
+  .teams-leaderboard-table th,
+  .teams-leaderboard-table td {
+    padding: 12px 10px;
+  }
+
+  .loading-text {
+    font-size: 18px;
+  }
+
+  .you {
+    font-size: 13px;
+  }
+
+  .teams-week-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teams-leaderboard-title {
+    font-size: 22px;
+  }
+
+  .teams-leaderboard-table {
+    font-size: 14px;
+  }
+
+  .teams-leaderboard-table thead tr {
+    font-size: 16px;
+  }
+
+  .loading-text {
+    font-size: 16px;
+  }
+
+  .you {
+    font-size: 12px;
+  }
+
+  .teams-week-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+.rank-header {
+  white-space: nowrap;
+  width: 80px;
 }
