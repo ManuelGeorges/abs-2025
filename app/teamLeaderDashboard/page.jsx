@@ -16,7 +16,7 @@ import "./page.css";
 
 export default function TeamDashboard() {
   const [teamMembers, setTeamMembers] = useState([]);
-  const [reports, setReports] = useState({});
+  const [reportsMap, setReportsMap] = useState({});
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -32,7 +32,6 @@ export default function TeamDashboard() {
     "هل حضرت الشرح؟",
     "هل حضرت المسابقات؟",
     "هل أتممت المهمة المقررة عليك؟",
-    
   ];
 
   useEffect(() => {
@@ -53,7 +52,6 @@ export default function TeamDashboard() {
         }
 
         const userData = userSnap.data();
-
         if (userData.role !== "teamLeader") {
           setCurrentUser(null);
           setLoading(false);
@@ -67,7 +65,6 @@ export default function TeamDashboard() {
           where("teamKey", "==", userData.teamKey),
           where("role", "==", "user")
         );
-
         const membersSnapshot = await getDocs(membersQuery);
         const members = membersSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -75,24 +72,19 @@ export default function TeamDashboard() {
         }));
 
         const reportsSnapshot = await getDocs(collection(db, "reports"));
-        const reportData = {};
+        const reportsData = {};
         reportsSnapshot.forEach((doc) => {
           const data = doc.data();
           if (data.teamKey === userData.teamKey && data.approved !== true) {
-            reportData[doc.id] = { ...data, id: doc.id };
+            reportsData[data.userId] = { ...data, id: doc.id };
           }
         });
 
-        setTeamMembers(members);
-        setReports(reportData);
-
-        // Week number based on start date
         const startDate = new Date("2025-06-13");
         const today = new Date();
         const diff = today - startDate;
-        const currentWeek = Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
+        const currentWeek = Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
 
-        // Get attendance
         const attendanceSnapshot = await getDocs(collection(db, "attendances"));
         const attendanceData = {};
         attendanceSnapshot.forEach((docSnap) => {
@@ -101,13 +93,13 @@ export default function TeamDashboard() {
             data.week === currentWeek &&
             (data.type === "lecture" || data.type === "competition")
           ) {
-            if (!attendanceData[data.email]) {
-              attendanceData[data.email] = {};
-            }
+            if (!attendanceData[data.email]) attendanceData[data.email] = {};
             attendanceData[data.email][data.type] = true;
           }
         });
 
+        setTeamMembers(members);
+        setReportsMap(reportsData);
         setAttendanceMap(attendanceData);
       } catch (error) {
         console.error(error);
@@ -126,7 +118,7 @@ export default function TeamDashboard() {
       await updateDoc(reportRef, { answers: newAnswers });
       setMessage("تم تعديل التقرير بنجاح");
 
-      setReports((prev) => ({
+      setReportsMap((prev) => ({
         ...prev,
         [reportId]: {
           ...prev[reportId],
@@ -148,18 +140,17 @@ export default function TeamDashboard() {
 
       const scores = {
         "هل قمت بحضور قداس في الإسبوع؟": 0,
-        "هل اعترفت على مدار الاسبوعين السابقين؟": 0,
+        "هل اعترفت على مدار الاسبوعين السابقين؟": 10,
         "هل حضرت التسبحة؟": 0,
-        "هل قمت بقراءة الجزء المقرر ": 10,
-        "هل قمت بنسخ الجزء المقرر ": 10,
+        "هل قمت بقراءة الجزء المقرر عليك؟": 10,
+        "هل قمت بنسخ الجزء المقرر عليك؟": 10,
+        "هل قمت بحفظ المزمور؟": 10,
         "هل حضرت الشرح؟": 5,
         "هل حضرت المسابقات؟": 5,
-        "هل أتممت المهمة المقررة ": 20,
-        "هل قمت بحفظ المزمور؟": 10,
+        "هل أتممت المهمة المقررة عليك؟": 20,
       };
 
       let totalScore = 0;
-
       questions.forEach((q, index) => {
         const key = `question${index + 1}`;
         if (answers[key] === "yes") {
@@ -174,9 +165,9 @@ export default function TeamDashboard() {
 
       setMessage("تمت الموافقة على التقرير وحساب الدرجات!");
 
-      setReports((prev) => {
+      setReportsMap((prev) => {
         const updated = { ...prev };
-        delete updated[reportId];
+        delete updated[reportData.userId];
         return updated;
       });
     } catch (error) {
@@ -197,21 +188,25 @@ export default function TeamDashboard() {
         <p>لا يوجد أعضاء في الفريق</p>
       ) : (
         teamMembers.map((member) => {
-          const report = Object.values(reports).find(
-            (r) => r.userId === member.id
-          );
+          const report = reportsMap[member.id];
           return (
-            report && (
-              <ReportCard
-                key={member.id}
-                member={member}
-                report={report}
-                questions={questions}
-                onEdit={handleEdit}
-                onApprove={() => handleApprove(report.id)}
-                attendanceMap={attendanceMap}
-              />
-            )
+            <div key={member.id}>
+              {report ? (
+                <ReportCard
+                  member={member}
+                  report={report}
+                  questions={questions}
+                  onEdit={handleEdit}
+                  onApprove={() => handleApprove(report.id)}
+                  attendanceMap={attendanceMap}
+                />
+              ) : (
+                <div className="report-card">
+                  <h3>{member.name}</h3>
+                  <p style={{ color: "#999" }}>لم يُرسل التقرير بعد.</p>
+                </div>
+              )}
+            </div>
           );
         })
       )}
@@ -248,9 +243,11 @@ function ReportCard({ member, report, questions, onEdit, onApprove, attendanceMa
           const isLecture = q === "هل حضرت الشرح؟";
           const isCompetition = q === "هل حضرت المسابقات؟";
           const signed =
-            attendanceMap?.[member.email]?.[
-              isLecture ? "lecture" : isCompetition ? "competition" : ""
-            ];
+            isLecture
+              ? attendanceMap?.[member.email]?.lecture
+              : isCompetition
+              ? attendanceMap?.[member.email]?.competition
+              : undefined;
 
           return (
             <li key={key}>
