@@ -174,8 +174,8 @@ export default function DirectorDashboard() {
                     <div className="dd-answers">
                       {questions.map((qText, index) => {
                         const answer = report.answers?.[`question${index + 1}`];
-                        const isLecture = index === 5;
-                        const isCompetition = index === 6;
+                        const isLecture = index ===6;
+                        const isCompetition = index === 7;
                         const signed =
                           attendanceMap?.[user.email]?.[
                             isLecture ? "lecture" : isCompetition ? "competition" : ""
