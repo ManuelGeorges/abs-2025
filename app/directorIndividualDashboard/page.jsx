@@ -41,9 +41,9 @@ export default function DirectorDashboard() {
     for (let i = 0; i < questions.length; i++) {
       const answer = answers?.[`question${i + 1}`];
       if (answer === "yes") {
-        if (i === 7 || i === 8) {
+        if (i === 6 || i === 7) {
           score += 5;
-        } else if(i === 3 || i === 1) {
+        } else if(i === 2 || i === 0) {
           score += 0;}
           else {
           score += 10;
