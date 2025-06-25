@@ -160,3 +160,31 @@
     align-items: flex-start;
   }
 }
+
+.dd-approve-btn {
+  background-color: #28a745; /* لون أخضر أنيق */
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  max-width: 180px;
+  margin-top: 10px;
+}
+
+.dd-approve-btn:hover {
+  background-color: #218838;
+  transform: scale(1.03);
+}
+
+@media (max-width: 500px) {
+  .dd-approve-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
