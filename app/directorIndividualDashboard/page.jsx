@@ -9,6 +9,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import "./idb.css";
@@ -48,54 +49,47 @@ export default function DirectorDashboard() {
     return score;
   };
 
+  const handleApprove = async (reportId, answers) => {
+    const score = calculateScore(answers);
+    try {
+      await updateDoc(doc(db, "reports", reportId), {
+        approved: true,
+        score,
+      });
+      setReports((prev) =>
+        prev.map((r) =>
+          r.id === reportId ? { ...r, approved: true, score } : r
+        )
+      );
+    } catch (err) {
+      console.error("Approval failed", err);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        router.push("/login");
-        return;
+      if (!user) return router.push("/login");
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists() || userDoc.data().role !== "director") {
+        return router.push("/unauthorized");
       }
-
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userDocRef);
-
-        if (!userSnap.exists()) {
-          router.push("/login");
-          return;
-        }
-
-        const data = userSnap.data();
-        if (data.role !== "director") {
-          router.push("/unauthorized");
-          return;
-        }
-
-        setUserRole(data.role);
-      } catch (error) {
-        console.error("Error checking user role:", error);
-        router.push("/login");
-      }
+      setUserRole("director");
     });
-
     return () => unsubscribe();
   }, [router]);
 
   useEffect(() => {
     if (!userRole) return;
-
     const fetchData = async () => {
       try {
         const usersSnap = await getDocs(collection(db, "users"));
         const usersData = usersSnap.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .filter((user) => user.role === "user");
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter((u) => u.role === "user");
 
         const reportsQuery = query(
           collection(db, "reports"),
-          where("approved", "==", true),
           where("weekNumber", "==", selectedWeek)
         );
         const reportsSnap = await getDocs(reportsQuery);
@@ -107,12 +101,11 @@ export default function DirectorDashboard() {
         setUsers(usersData);
         setReports(reportsData);
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (err) {
+        console.error("Data load error", err);
         setLoading(false);
       }
     };
-
     fetchData();
   }, [userRole, selectedWeek]);
 
@@ -127,7 +120,6 @@ export default function DirectorDashboard() {
   return (
     <div className="dd-director-container">
       <h1>Director Dashboard</h1>
-
       <div className="dd-week-nav">
         {[1, 2, 3, 4, 5, 6, 7].map((week) => (
           <button
@@ -146,7 +138,6 @@ export default function DirectorDashboard() {
           {groupedByTeam[teamKey].map((user) => {
             const report = reports.find((r) => r.email === user.email);
             const score = report ? calculateScore(report.answers) : null;
-
             return (
               <div className="dd-report-card" key={user.id}>
                 <h3>{user.name || user.username}</h3>
@@ -158,7 +149,9 @@ export default function DirectorDashboard() {
                   <>
                     <p>
                       <strong>Approved:</strong>{" "}
-                      <span className="dd-approved">Yes</span>
+                      <span className={report.approved ? "dd-approved" : "dd-not-approved"}>
+                        {report.approved ? "Yes" : "No"}
+                      </span>
                     </p>
                     <div className="dd-answers">
                       {questions.map((qText, index) => {
@@ -173,10 +166,20 @@ export default function DirectorDashboard() {
                         );
                       })}
                     </div>
-                    <p className="dd-score">Score: <span>{score} / 80</span></p>
+                    <p className="dd-score">
+                      Score: <span>{score} / 80</span>
+                    </p>
+                    {!report.approved && (
+                      <button
+                        className="dd-approve-btn"
+                        onClick={() => handleApprove(report.id, report.answers)}
+                      >
+                        Approve Report
+                      </button>
+                    )}
                   </>
                 ) : (
-                  <p className="dd-no-report">No approved report for this week.</p>
+                  <p className="dd-no-report">No report for this week.</p>
                 )}
               </div>
             );

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "device-detector-js": "^3.0.3",
     "firebase": "^11.8.1",
     "next": "15.3.2",
     "next-auth": "^4.24.11",

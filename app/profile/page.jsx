@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { auth, db } from "../../lib/firebase";
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
+import DeviceDetector from "device-detector-js";
 import "./page.css";
 
 export default function ProfilePage() {
@@ -33,6 +34,52 @@ export default function ProfilePage() {
         const userInfo = userSnap.data();
         setUserData(userInfo);
 
+        // ✅ 1. تحليل userAgent بالمكتبة الجديدة
+        const ua = navigator.userAgent;
+        const detector = new DeviceDetector();
+        const deviceInfo = detector.parse(ua);
+
+        const deviceType = deviceInfo.device?.type || "Unknown";
+        const deviceBrand = deviceInfo.device?.brand || "Unknown";
+        const deviceModel = deviceInfo.device?.model || "Unknown";
+        const os = deviceInfo.os?.name || "Unknown";
+        const osVersion = deviceInfo.os?.version || "";
+        const browser = deviceInfo.client?.name || "Unknown";
+        const browserVersion = deviceInfo.client?.version || "";
+
+        // ✅ 2. معلومات إضافية من الجهاز
+        const language = navigator.language;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localTime = new Date().toString();
+
+        // ✅ 3. استعلام IP والموقع
+        const ipRes = await fetch("https://ipinfo.io/json?token=14b48dc3fdfc28"); // ← حط توكنك هنا
+        const ipData = await ipRes.json();
+
+        // ✅ 4. البيانات النهائية
+        const fullDeviceData = {
+          deviceType,
+          deviceBrand,
+          deviceModel,
+          os,
+          osVersion,
+          browser,
+          browserVersion,
+          userAgent: ua,
+          language,
+          timezone,
+          localTime,
+          ip: ipData.ip || null,
+          city: ipData.city || null,
+          region: ipData.region || null,
+          country: ipData.country || null,
+          isp: ipData.org || null,
+        };
+
+        // ✅ 5. تحديث المستخدم بالبيانات الجديدة
+        await updateDoc(userRef, fullDeviceData);
+
+        // ✅ 6. جمع السكورات (لو role = user)
         if (userInfo.role === "user") {
           const reportsQuery = query(
             collection(db, "reports"),
@@ -85,7 +132,7 @@ export default function ProfilePage() {
           setScores(combined);
         }
       } catch (error) {
-        console.error("🔥 Error fetching data:", error);
+        console.error("🔥 Error fetching/updating user data:", error);
       }
 
       setLoading(false);
