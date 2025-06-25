@@ -43,7 +43,7 @@ export default function DirectorDashboard() {
       if (answer === "yes") {
         if (i === 7 || i === 8) {
           score += 5;
-        } else if(i === 3){
+        } else if(i === 3 || i === 1) {
           score += 0;}
           else {
           score += 10;
@@ -199,7 +199,7 @@ export default function DirectorDashboard() {
                       })}
                     </div>
                     <p className="dd-score">
-                      Score: <span>{score} / 70</span>
+                      Score: <span>{score} / 60</span>
                     </p>
                     {!report.approved && (
                       <button
