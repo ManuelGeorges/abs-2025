@@ -20,6 +20,7 @@ export default function TeamDashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [attendanceMap, setAttendanceMap] = useState({});
 
   const questions = [
     "هل قمت بحضور قداس في الإسبوع؟",
@@ -83,9 +84,33 @@ export default function TeamDashboard() {
 
         setTeamMembers(members);
         setReports(reportData);
+
+        // Week number based on start date
+        const startDate = new Date("2025-06-13");
+        const today = new Date();
+        const diff = today - startDate;
+        const currentWeek = Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
+
+        // Get attendance
+        const attendanceSnapshot = await getDocs(collection(db, "attendances"));
+        const attendanceData = {};
+        attendanceSnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (
+            data.week === currentWeek &&
+            (data.type === "lecture" || data.type === "competition")
+          ) {
+            if (!attendanceData[data.email]) {
+              attendanceData[data.email] = {};
+            }
+            attendanceData[data.email][data.type] = true;
+          }
+        });
+
+        setAttendanceMap(attendanceData);
       } catch (error) {
-        setMessage("حدث خطأ أثناء جلب البيانات");
         console.error(error);
+        setMessage("حدث خطأ أثناء جلب البيانات");
       }
 
       setLoading(false);
@@ -108,8 +133,8 @@ export default function TeamDashboard() {
         },
       }));
     } catch (error) {
-      setMessage("فشل تعديل التقرير.");
       console.error(error);
+      setMessage("فشل تعديل التقرير.");
     }
   };
 
@@ -154,8 +179,8 @@ export default function TeamDashboard() {
         return updated;
       });
     } catch (error) {
-      setMessage("فشل في الموافقة على التقرير.");
       console.error(error);
+      setMessage("فشل في الموافقة على التقرير.");
     }
   };
 
@@ -183,6 +208,7 @@ export default function TeamDashboard() {
                 questions={questions}
                 onEdit={handleEdit}
                 onApprove={() => handleApprove(report.id)}
+                attendanceMap={attendanceMap}
               />
             )
           );
@@ -192,7 +218,7 @@ export default function TeamDashboard() {
   );
 }
 
-function ReportCard({ member, report, questions, onEdit, onApprove }) {
+function ReportCard({ member, report, questions, onEdit, onApprove, attendanceMap }) {
   const [isEditing, setIsEditing] = useState(false);
   const [answers, setAnswers] = useState(report?.answers || {});
 
@@ -215,79 +241,86 @@ function ReportCard({ member, report, questions, onEdit, onApprove }) {
   return (
     <div className="report-card">
       <h3>{member.name}</h3>
-      {report ? (
-        <ul className="answers-list">
-          {questions.map((q, i) => {
-            const key = `question${i + 1}`;
-            return (
-              <li key={key}>
-                <strong>{q}</strong>:{" "}
-                {isEditing ? (
-                  <select
-                    value={answers[key] || ""}
-                    onChange={(e) => handleChange(e, key)}
-                  >
-                    <option value="">اختر</option>
-                    <option value="yes">نعم</option>
-                    <option value="no">لا</option>
-                  </select>
-                ) : (
-                  <span
-                    style={{
-                      color:
-                        answers[key] === "yes"
-                          ? "green"
-                          : answers[key] === "no"
-                          ? "red"
-                          : "#333",
-                    }}
-                  >
-                    {answers[key] === "yes"
-                      ? "نعم"
-                      : answers[key] === "no"
-                      ? "لا"
-                      : "غير مجاب"}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="no-report">لا يوجد تقرير</p>
-      )}
+      <ul className="answers-list">
+        {questions.map((q, i) => {
+          const key = `question${i + 1}`;
+          const isLecture = q === "هل حضرت الشرح؟";
+          const isCompetition = q === "هل حضرت المسابقات؟";
+          const signed =
+            attendanceMap?.[member.email]?.[
+              isLecture ? "lecture" : isCompetition ? "competition" : ""
+            ];
 
-      {report && (
-        <div className="btn-group">
-          {isEditing ? (
-            <>
-              <button className="btn save-btn" onClick={saveEdit}>
-                حفظ
-              </button>
-              <button
-                className="btn cancel-btn"
-                onClick={() => {
-                  setIsEditing(false);
-                  setAnswers(report.answers);
-                }}
-              >
-                إلغاء
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="btn edit-btn" onClick={() => setIsEditing(true)}>
-                تعديل
-              </button>
-              {!report.approved && (
-                <button className="btn approve-btn" onClick={onApprove}>
-                  موافقة
-                </button>
+          return (
+            <li key={key}>
+              <strong>{q}</strong>:{" "}
+              {isEditing ? (
+                <select
+                  value={answers[key] || ""}
+                  onChange={(e) => handleChange(e, key)}
+                >
+                  <option value="">اختر</option>
+                  <option value="yes">نعم</option>
+                  <option value="no">لا</option>
+                </select>
+              ) : (
+                <span
+                  style={{
+                    color:
+                      answers[key] === "yes"
+                        ? "green"
+                        : answers[key] === "no"
+                        ? "red"
+                        : "#333",
+                  }}
+                >
+                  {answers[key] === "yes"
+                    ? "نعم"
+                    : answers[key] === "no"
+                    ? "لا"
+                    : "غير مجاب"}
+                </span>
               )}
-            </>
-          )}
-        </div>
-      )}
+
+              {(isLecture || isCompetition) && (
+                <span className={`signed-status ${signed ? "signed" : "not-signed"}`}>
+                  {signed ? "Signed" : "Not Signed"}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="btn-group">
+        {isEditing ? (
+          <>
+            <button className="btn save-btn" onClick={saveEdit}>
+              حفظ
+            </button>
+            <button
+              className="btn cancel-btn"
+              onClick={() => {
+                setIsEditing(false);
+                setAnswers(report.answers);
+              }}
+            >
+              إلغاء
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="btn edit-btn" onClick={() => setIsEditing(true)}>
+              تعديل
+            </button>
+            {!report.approved && (
+              <button className="btn approve-btn" onClick={onApprove}>
+                موافقة
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

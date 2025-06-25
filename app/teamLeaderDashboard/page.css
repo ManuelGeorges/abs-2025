@@ -191,3 +191,25 @@ select {
     font-size: 24px;
   }
 }
+
+.signed-status {
+  display: inline-block;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.signed {
+  background-color: #e0f7e9;
+  color: #007e33;
+  border: 1px solid #007e33;
+}
+
+.not-signed {
+  background-color: #fdecea;
+  color: #b00020;
+  border: 1px solid #b00020;
+}

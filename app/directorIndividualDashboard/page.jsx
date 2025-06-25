@@ -20,6 +20,7 @@ export default function DirectorDashboard() {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
+  const [attendanceMap, setAttendanceMap] = useState({});
   const router = useRouter();
 
   const questions = [
@@ -81,6 +82,7 @@ export default function DirectorDashboard() {
 
   useEffect(() => {
     if (!userRole) return;
+
     const fetchData = async () => {
       try {
         const usersSnap = await getDocs(collection(db, "users"));
@@ -98,14 +100,28 @@ export default function DirectorDashboard() {
           ...doc.data(),
         }));
 
+        const attendanceSnap = await getDocs(collection(db, "attendances"));
+        const attendanceData = {};
+        attendanceSnap.forEach((doc) => {
+          const data = doc.data();
+          if (data.week === selectedWeek) {
+            if (!attendanceData[data.email]) {
+              attendanceData[data.email] = {};
+            }
+            attendanceData[data.email][data.type] = true;
+          }
+        });
+
         setUsers(usersData);
         setReports(reportsData);
+        setAttendanceMap(attendanceData);
         setLoading(false);
       } catch (err) {
         console.error("Data load error", err);
         setLoading(false);
       }
     };
+
     fetchData();
   }, [userRole, selectedWeek]);
 
@@ -138,6 +154,7 @@ export default function DirectorDashboard() {
           {groupedByTeam[teamKey].map((user) => {
             const report = reports.find((r) => r.email === user.email);
             const score = report ? calculateScore(report.answers) : null;
+
             return (
               <div className="dd-report-card" key={user.id}>
                 <h3>{user.name || user.username}</h3>
@@ -155,13 +172,25 @@ export default function DirectorDashboard() {
                     </p>
                     <div className="dd-answers">
                       {questions.map((qText, index) => {
-                        const answer = report.answers[`question${index + 1}`];
+                        const answer = report.answers?.[`question${index + 1}`];
+                        const isLecture = index === 5;
+                        const isCompetition = index === 6;
+                        const signed =
+                          attendanceMap?.[user.email]?.[
+                            isLecture ? "lecture" : isCompetition ? "competition" : ""
+                          ];
+
                         return (
                           <p key={`answer-${index}`}>
-                            <strong>{qText}:</strong>{" "}
+                            <strong>{qText}</strong>:{" "}
                             <span className={answer === "yes" ? "dd-yes" : "dd-no"}>
                               {answer === "yes" ? "Yes" : "No"}
                             </span>
+                            {(isLecture || isCompetition) && (
+                              <span className={`signed-status ${signed ? "signed" : "not-signed"}`}>
+                                {signed ? "Signed" : "Not Signed"}
+                              </span>
+                            )}
                           </p>
                         );
                       })}
