@@ -199,7 +199,7 @@ export default function DirectorDashboard() {
                       })}
                     </div>
                     <p className="dd-score">
-                      Score: <span>{score} / 80</span>
+                      Score: <span>{score} / 70</span>
                     </p>
                     {!report.approved && (
                       <button
