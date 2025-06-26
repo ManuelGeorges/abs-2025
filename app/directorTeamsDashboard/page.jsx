@@ -212,10 +212,7 @@ export default function DirectorDashboard() {
                     <ul>
                       {teamLeaders.map((leader) => (
                         <li key={leader.id} style={{ fontWeight: 'bold', color: '#4a4' }}>
-                          👑 {leader.name} - {leader.role}{" "}
-                          <span style={{ marginLeft: '8px', color: userReports[leader.email] ? 'green' : 'red' }}>
-                            {userReports[leader.email] ? "Yes" : "No"}
-                          </span>
+                          👑 {leader.name} - {leader.role}
                         </li>
                       ))}
                       {otherUsers.map((u) => (
