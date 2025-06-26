@@ -43,6 +43,7 @@ export default function DirectorDashboard() {
   const [teamScores, setTeamScores] = useState({});
   const [saveMessage, setSaveMessage] = useState('');
   const [users, setUsers] = useState([]);
+  const [userReports, setUserReports] = useState({});
 
   useEffect(() => {
     const fetchTeamScores = async () => {
@@ -76,6 +77,20 @@ export default function DirectorDashboard() {
         ...doc.data(),
       }));
       setUsers(usersList);
+
+      const reportsQuery = query(
+        collection(db, 'reports'),
+        where('weekNumber', '==', week)
+      );
+      const reportsSnap = await getDocs(reportsQuery);
+      const reportMap = {};
+      reportsSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data.email) {
+          reportMap[data.email] = true;
+        }
+      });
+      setUserReports(reportMap);
     };
 
     fetchTeamScores();
@@ -197,12 +212,18 @@ export default function DirectorDashboard() {
                     <ul>
                       {teamLeaders.map((leader) => (
                         <li key={leader.id} style={{ fontWeight: 'bold', color: '#4a4' }}>
-                          👑 {leader.name} - {leader.role}
+                          👑 {leader.name} - {leader.role}{" "}
+                          <span style={{ marginLeft: '8px', color: userReports[leader.email] ? 'green' : 'red' }}>
+                            {userReports[leader.email] ? "Yes" : "No"}
+                          </span>
                         </li>
                       ))}
                       {otherUsers.map((u) => (
                         <li key={u.id}>
-                          {u.name} - {u.role}
+                          {u.name} - {u.role}{" "}
+                          <span style={{ marginLeft: '8px', color: userReports[u.email] ? 'green' : 'red' }}>
+                            {userReports[u.email] ? "Yes" : "No"}
+                          </span>
                         </li>
                       ))}
                     </ul>
