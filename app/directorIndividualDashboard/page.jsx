@@ -77,13 +77,17 @@ export default function DirectorDashboard() {
   };
 
   const handleSaveEdit = async (reportId) => {
+    const updatedScore = calculateScore(editedAnswers);
     try {
       await updateDoc(doc(db, "reports", reportId), {
         answers: editedAnswers,
+        score: updatedScore,
       });
       setReports((prev) =>
         prev.map((r) =>
-          r.id === reportId ? { ...r, answers: editedAnswers } : r
+          r.id === reportId
+            ? { ...r, answers: editedAnswers, score: updatedScore }
+            : r
         )
       );
       setEditingReportId(null);
