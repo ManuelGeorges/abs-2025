@@ -21,6 +21,8 @@ export default function DirectorDashboard() {
   const [userRole, setUserRole] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [attendanceMap, setAttendanceMap] = useState({});
+  const [editingReportId, setEditingReportId] = useState(null);
+  const [editedAnswers, setEditedAnswers] = useState({});
   const router = useRouter();
 
   const questions = [
@@ -33,24 +35,28 @@ export default function DirectorDashboard() {
     "هل أنا حضرت الشرح؟",
     "هل أنا حضرت المسابقات؟",
     "هل أنا أتممت المهمة المقررة ",
-    
   ];
 
+  const scoreWeights = {
+    question1: 0,
+    question2: 10,
+    question3: 0,
+    question4: 10,
+    question5: 10,
+    question6: 10,
+    question7: 5,
+    question8: 5,
+    question9: 10,
+  };
+
   const calculateScore = (answers) => {
-    let score = 0;
-    for (let i = 0; i < questions.length; i++) {
-      const answer = answers?.[`question${i + 1}`];
-      if (answer === "yes") {
-        if (i === 6 || i === 7) {
-          score += 5;
-        } else if(i === 2 || i === 0) {
-          score += 0;}
-          else {
-          score += 10;
-        }
+    let total = 0;
+    for (const key in answers) {
+      if (answers[key] === "yes" && scoreWeights[key]) {
+        total += scoreWeights[key];
       }
     }
-    return score;
+    return total;
   };
 
   const handleApprove = async (reportId, answers) => {
@@ -67,6 +73,22 @@ export default function DirectorDashboard() {
       );
     } catch (err) {
       console.error("Approval failed", err);
+    }
+  };
+
+  const handleSaveEdit = async (reportId) => {
+    try {
+      await updateDoc(doc(db, "reports", reportId), {
+        answers: editedAnswers,
+      });
+      setReports((prev) =>
+        prev.map((r) =>
+          r.id === reportId ? { ...r, answers: editedAnswers } : r
+        )
+      );
+      setEditingReportId(null);
+    } catch (err) {
+      console.error("Update failed", err);
     }
   };
 
@@ -175,8 +197,8 @@ export default function DirectorDashboard() {
                     </p>
                     <div className="dd-answers">
                       {questions.map((qText, index) => {
-                        const answer = report.answers?.[`question${index + 1}`];
-                        const isLecture = index ===6;
+                        const key = `question${index + 1}`;
+                        const isLecture = index === 6;
                         const isCompetition = index === 7;
                         const signed =
                           attendanceMap?.[user.email]?.[
@@ -184,11 +206,27 @@ export default function DirectorDashboard() {
                           ];
 
                         return (
-                          <p key={`answer-${index}`}>
+                          <p key={key}>
                             <strong>{qText}</strong>:{" "}
-                            <span className={answer === "yes" ? "dd-yes" : "dd-no"}>
-                              {answer === "yes" ? "Yes" : "No"}
-                            </span>
+                            {editingReportId === report.id ? (
+                              <select
+                                value={editedAnswers[key] || ""}
+                                onChange={(e) =>
+                                  setEditedAnswers((prev) => ({
+                                    ...prev,
+                                    [key]: e.target.value,
+                                  }))
+                                }
+                              >
+                                <option value="">اختر</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                            ) : (
+                              <span className={report.answers?.[key] === "yes" ? "dd-yes" : "dd-no"}>
+                                {report.answers?.[key] === "yes" ? "Yes" : "No"}
+                              </span>
+                            )}
                             {(isLecture || isCompetition) && (
                               <span className={`signed-status ${signed ? "signed" : "not-signed"}`}>
                                 {signed ? "Signed" : "Not Signed"}
@@ -198,16 +236,28 @@ export default function DirectorDashboard() {
                         );
                       })}
                     </div>
-                    <p className="dd-score">
-                      Score: <span>{score} / 60</span>
-                    </p>
-                    {!report.approved && (
-                      <button
-                        className="dd-approve-btn"
-                        onClick={() => handleApprove(report.id, report.answers)}
-                      >
-                        Approve Report
-                      </button>
+
+                    <p className="dd-score">Score: <span>{score} / 60</span></p>
+
+                    {editingReportId === report.id ? (
+                      <div className="dd-buttons">
+                        <button onClick={() => handleSaveEdit(report.id)}>Save</button>
+                        <button onClick={() => setEditingReportId(null)}>Cancel</button>
+                      </div>
+                    ) : (
+                      <div className="dd-buttons">
+                        <button onClick={() => {
+                          setEditingReportId(report.id);
+                          setEditedAnswers({ ...report.answers });
+                        }}>
+                          Edit
+                        </button>
+                        {!report.approved && (
+                          <button onClick={() => handleApprove(report.id, report.answers)}>
+                            Approve
+                          </button>
+                        )}
+                      </div>
                     )}
                   </>
                 ) : (

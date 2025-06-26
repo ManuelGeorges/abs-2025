@@ -210,3 +210,38 @@
   color: #b00020;
   border: 1px solid #b00020;
 }
+
+.dd-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.dd-buttons button {
+  padding: 6px 12px;
+  background-color: #0055aa;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.dd-buttons button:hover {
+  background-color: #003f88;
+}
+
+.dd-buttons button:nth-child(2) {
+  background-color: #999;
+}
+
+.dd-buttons button:nth-child(2):hover {
+  background-color: #777;
+}
+
+select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
