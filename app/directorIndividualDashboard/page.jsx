@@ -46,7 +46,7 @@ export default function DirectorDashboard() {
     question6: 10,
     question7: 5,
     question8: 5,
-    question9: 10,
+    question9: 20,
   };
 
   const calculateScore = (answers) => {
