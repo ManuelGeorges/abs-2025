@@ -39,7 +39,7 @@ export default function DirectorDashboard() {
 
   const scoreWeights = {
     question1: 0,
-    question2: 10,
+    question2: 0,
     question3: 0,
     question4: 10,
     question5: 10,
