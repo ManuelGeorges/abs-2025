@@ -13,7 +13,6 @@ export default function TeamLeaderboardPage() {
   const [loading, setLoading] = useState(false);
   const [availableWeeks, setAvailableWeeks] = useState([]);
 
-  // 🟡 خريطة الأسماء من الإنجليزي للعربي
   const teamNames = {
     'HeavenlyJerusalem': 'أورشليم السماوية',
     'Philadelphia': 'فيلادلفيا',
@@ -25,7 +24,6 @@ export default function TeamLeaderboardPage() {
     'Laodicea': 'لاودكية',
   };
 
-  // 🟡 دالة تجيب الاسم العربي
   function getArabicTeamName(teamKey) {
     return teamNames[teamKey] || teamKey;
   }
@@ -74,6 +72,7 @@ export default function TeamLeaderboardPage() {
             totalScore: data.totalScore,
             examScore: data.examScore,
             tasksScore: data.tasksScore,
+            luckWheelScore: data.luckScore, 
           });
         });
 
@@ -140,6 +139,7 @@ export default function TeamLeaderboardPage() {
               <th>Total</th>
               <th>Exam</th>
               <th>Tasks</th>
+              <th>Luck Wheel</th>
             </tr>
           </thead>
           <tbody>
@@ -152,6 +152,7 @@ export default function TeamLeaderboardPage() {
                   <td>{team.totalScore}</td>
                   <td>{team.examScore}</td>
                   <td>{team.tasksScore}</td>
+                  <td>{team.luckWheelScore ?? 0}</td> {/* ✅ عرض القيمة */}
                 </tr>
               );
             })}
