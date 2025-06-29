@@ -114,8 +114,8 @@ export default function TeamLeaderboardPage() {
   }
 
   return (
-    <div className="leaderboard-container">
-      <h2 className="leaderboard-title">🏆 Teams Leaderboard</h2>
+    <div className="teams-leaderboard-container">
+      <h2 className="teams-leaderboard-title">🏆 Teams Leaderboard</h2>
 
       <div className="week-selector">
         {availableWeeks.map((week) => (
@@ -132,7 +132,7 @@ export default function TeamLeaderboardPage() {
       {loading && <p className="loading-text">Loading team leaderboard...</p>}
 
       {!loading && selectedWeek && teamData && teamData.length > 0 && (
-        <table className="leaderboard-table">
+        <table className="teams-leaderboard-table">
           <thead>
             <tr>
               <th>Rank</th>
