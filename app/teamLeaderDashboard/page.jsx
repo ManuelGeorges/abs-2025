@@ -34,6 +34,18 @@ export default function TeamDashboard() {
     "هل أتممت المهمة المقررة عليك؟",
   ];
 
+  const scoreWeights = {
+    question1: 0,
+    question2: 0,
+    question3: 0,
+    question4: 10,
+    question5: 10,
+    question6: 10,
+    question7: 5,
+    question8: 5,
+    question9: 20,
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -138,25 +150,12 @@ export default function TeamDashboard() {
       const reportData = reportSnap.data();
       const answers = reportData.answers || {};
 
-      const scores = {
-        "هل قمت بحضور قداس في الإسبوع؟": 0,
-        "هل اعترفت على مدار الاسبوعين السابقين؟": 0,
-        "هل حضرت التسبحة؟": 0,
-        "هل قمت بقراءة الجزء المقرر عليك؟": 10,
-        "هل قمت بنسخ الجزء المقرر عليك؟": 10,
-        "هل قمت بحفظ المزمور؟": 10,
-        "هل حضرت الشرح؟": 5,
-        "هل حضرت المسابقات؟": 5,
-        "هل أتممت المهمة المقررة عليك؟": 20,
-      };
-
       let totalScore = 0;
-      questions.forEach((q, index) => {
-        const key = `question${index + 1}`;
-        if (answers[key] === "yes") {
-          totalScore += scores[q] || 0;
+      for (const key in answers) {
+        if (answers[key] === "yes" && scoreWeights[key]) {
+          totalScore += scoreWeights[key];
         }
-      });
+      }
 
       await updateDoc(reportRef, {
         approved: true,

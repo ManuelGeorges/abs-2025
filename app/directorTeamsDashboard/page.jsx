@@ -60,12 +60,13 @@ export default function DirectorDashboard() {
         data[docData.teamKey] = {
           examScore: docData.examScore ?? '',
           tasksScore: docData.tasksScore ?? '',
+          luckScore: docData.luckScore ?? '',
         };
       });
 
       ALL_TEAMS.forEach((team) => {
         if (!data[team]) {
-          data[team] = { examScore: '', tasksScore: '' };
+          data[team] = { examScore: '', tasksScore: '', luckScore: '' };
         }
       });
 
@@ -110,7 +111,8 @@ export default function DirectorDashboard() {
     try {
       const exam = Number(teamScores[teamKey]?.examScore) || 0;
       const tasks = Number(teamScores[teamKey]?.tasksScore) || 0;
-      const total = exam + tasks;
+      const luck = Number(teamScores[teamKey]?.luckScore) || 0;
+      const total = exam + tasks + luck;
 
       const q = query(
         collection(db, 'teamScores'),
@@ -118,23 +120,22 @@ export default function DirectorDashboard() {
         where('week', '==', week)
       );
       const querySnapshot = await getDocs(q);
+      const dataToSave = {
+        examScore: exam,
+        tasksScore: tasks,
+        luckScore: luck,
+        totalScore: total,
+        teamKey,
+        week,
+      };
+
       if (!querySnapshot.empty) {
         const docRef = doc(db, 'teamScores', querySnapshot.docs[0].id);
-        await updateDoc(docRef, {
-          examScore: exam,
-          tasksScore: tasks,
-          totalScore: total,
-        });
+        await updateDoc(docRef, dataToSave);
       } else {
-        const newDoc = {
-          teamKey,
-          week,
-          examScore: exam,
-          tasksScore: tasks,
-          totalScore: total,
-        };
-        await addDoc(collection(db, 'teamScores'), newDoc);
+        await addDoc(collection(db, 'teamScores'), dataToSave);
       }
+
       setSaveMessage(`تم حفظ درجات فريق ${TEAM_NAMES[teamKey]} بنجاح!`);
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
@@ -179,6 +180,7 @@ export default function DirectorDashboard() {
             return (
               <div key={teamKey} className="team-card">
                 <div className="team-title">{TEAM_NAMES[teamKey]}</div>
+
                 <div className="input-row">
                   <div className="input-group">
                     <label>Exam Score</label>
@@ -188,6 +190,7 @@ export default function DirectorDashboard() {
                       onChange={(e) => handleChange(teamKey, 'examScore', e.target.value || '')}
                     />
                   </div>
+
                   <div className="input-group">
                     <label>Tasks Score</label>
                     <input
@@ -196,6 +199,16 @@ export default function DirectorDashboard() {
                       onChange={(e) => handleChange(teamKey, 'tasksScore', e.target.value || '')}
                     />
                   </div>
+
+                  <div className="input-group">
+                    <label>Luck Wheel Score</label>
+                    <input
+                      type="number"
+                      value={teamScores[teamKey]?.luckScore ?? ''}
+                      onChange={(e) => handleChange(teamKey, 'luckScore', e.target.value || '')}
+                    />
+                  </div>
+
                   <button
                     className="save-button"
                     onClick={() => handleSave(teamKey)}
