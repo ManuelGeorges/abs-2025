@@ -236,6 +236,9 @@ function ReportCard({ member, report, questions, onEdit, onApprove, attendanceMa
   return (
     <div className="report-card">
       <h3>{member.name}</h3>
+      <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
+        تقرير الأسبوع رقم: <strong>{report.weekNumber}</strong>
+      </p>
       <ul className="answers-list">
         {questions.map((q, i) => {
           const key = `question${i + 1}`;

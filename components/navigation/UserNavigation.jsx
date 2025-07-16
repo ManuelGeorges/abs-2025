@@ -39,13 +39,13 @@ export default function UserNavigation() {
             <Link href="/teamsLeaderboard">Teams L.B</Link>
           </>
         )}
-
+        {role === "director" && <Link href="/directorLeaderboard">L.B</Link>} 
         {role !== "director" && role !== "quest-admin" && role !== "secretariat" && (
           <Link href="/teamLeaderboard/">Friends L.B</Link>
         )}
 
         {role !== "quest-admin" && role !== "secretariat" && <Link href="/teamsLeaderboard">Teams L.B</Link>}
-        {role !== "quest-admin" && role !== "secretariat" && <Link href="/leaderboard">L.B</Link>}
+        {role !== "quest-admin" && role !== "secretariat" && role !== "director" && <Link href="/leaderboard">L.B</Link>}
         {role === "director" && (
           <>
             <Link href="/secretariat/Qr-code">Qr Code</Link>
