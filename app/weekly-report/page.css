@@ -1,48 +1,119 @@
 /* Container */
 .form-container {
-  max-width: 480px;
-  margin: 30px auto;
-  padding: 25px 20px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(90, 103, 216, 0.2);
+  max-width: 800px; /* زودنا العرض عشان يناسب الـ nav bar */
+  margin: 50px auto; /* زودنا المارجن عشان يبقى فيه مساحة كافية */
+  padding: 40px 60px; /* زودنا البادينج برضه */
+  background: linear-gradient(145deg, #f0f4ff, #d9e6ff); /* تصميم الخلفية */
+  border-radius: 30px; /* Radius أكبر */
+  box-shadow: 0 20px 50px rgba(30, 60, 120, 0.25); /* Box shadow أعمق */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  direction: rtl;
+  direction: rtl; /* حافظنا على الـ RTL */
+  color: #1e293b; /* لون الخط الافتراضي */
+  transition: all 0.3s ease; /* تحسين الانتقالات */
 }
 
 /* العنوان */
-.form-container h2 {
+.form-title {
   text-align: center;
-  margin-bottom: 20px;
-  color: #3b3b98;
+  font-size: 38px; /* حجم أكبر للعنوان */
+  color: #1e40af; /* لون أزرق داكن */
+  margin-bottom: 40px;
+  font-weight: 800; /* خط أثقل */
+  letter-spacing: 1.8px;
+  text-shadow: 2px 2px 7px rgba(30, 64, 175, 0.4); /* ظل نصي */
+}
+
+/* عنوان الأسبوع المحدد */
+.week-heading {
+  text-align: center;
+  font-size: 28px;
+  color: #2563eb;
+  margin-top: 30px;
+  margin-bottom: 30px;
   font-weight: 700;
-  font-size: 1.8rem;
+}
+
+/* Week Selector Buttons */
+.week-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.week-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid #007bff; /* استخدمنا لون أزرق فاتح للمتناسق */
+  color: #007bff;
+  border-radius: 9999px; /* شكل أقرب للدائرة */
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 100px; /* عشان الأزرار تكون بعرض موحد */
+  text-align: center;
+}
+
+.week-btn:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px); /* تأثير بسيط عند الـ hover */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.week-btn.selected {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+  font-weight: 700;
+}
+
+.week-btn:disabled {
+  border-color: #ccc;
+  color: #aaa;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  opacity: 0.7;
 }
 
 /* كل سؤال */
 .question-group {
-  margin-bottom: 22px;
+  margin-bottom: 25px; /* زيادة المارجن */
+  background-color: #ffffff;
+  padding: 20px 25px; /* زيادة البادينج */
+  border-radius: 15px; /* Radius أكبر */
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1); /* ظل جديد */
+  transition: all 0.2s ease;
+}
+
+.question-group:hover {
+  box-shadow: 0 12px 35px rgba(59, 130, 246, 0.2);
+  transform: translateY(-3px);
 }
 
 /* نص السؤال */
 .question-text {
-  font-size: 1.25rem;
+  font-size: 20px; /* حجم الخط الجديد */
   font-weight: 600;
-  margin-bottom: 10px;
-  color: #222;
+  margin-bottom: 15px;
+  color: #1e293b; /* لون خط جديد */
+  line-height: 1.5;
 }
 
 /* مجموعة الراديو */
 .radio-group {
   display: flex;
-  gap: 35px;
-  flex-wrap: wrap;
+  gap: 30px; /* ضبط المسافات */
+  align-items: center;
+  justify-content: center; /* توسيط الأزرار */
+  flex-wrap: wrap; /* للسماح بالالتفاف على الشاشات الصغيرة */
 }
 
 /* الليبل والراديو */
 .radio-group label {
-  font-size: 1.3rem;
-  color: #444;
+  font-size: 18px; /* حجم خط جديد */
+  color: #334155; /* لون خط جديد */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -52,121 +123,363 @@
 
 /* الدائرة الكبيرة */
 .radio-group input[type="radio"] {
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  accent-color: #5a67d8;
+  appearance: none; /* إزالة الستايل الافتراضي للمتصفح */
+  width: 24px; /* حجم جديد */
+  height: 24px;
+  border: 2px solid #3b82f6; /* لون حدود جديد */
   border-radius: 50%;
+  margin-right: 10px; /* مسافة بين الدائرة والنص */
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 0 4px rgba(90, 103, 216, 0.6);
-  transition: box-shadow 0.2s ease;
+  /* إزالة الـ box-shadow القديم واستخدام نظام جديد */
 }
 
-.radio-group input[type="radio"]:hover {
-  box-shadow: 0 0 7px rgba(90, 103, 216, 0.9);
+.radio-group input[type="radio"]:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.radio-group input[type="radio"]:checked::before {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* حالة الـ disabled لأزرار الراديو */
+.radio-group input[type="radio"]:disabled {
+  background-color: #e0e0e0;
+  border-color: #bbb;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.radio-group input[type="radio"]:disabled:checked {
+  background-color: #8bb4f7; /* لون مختلف لما يكون disabled و checked */
+  border-color: #8bb4f7;
 }
 
 /* زر الإرسال */
 .submit-btn {
-  width: 100%;
-  padding: 14px;
-  background-color: #5a67d8;
-  border: none;
-  border-radius: 10px;
+  display: block; /* عشان يقبل الـ margin: auto */
+  width: fit-content; /* عشان يكون بحجم المحتوى فقط */
+  margin: 30px auto 0; /* توسيط الزر */
+  padding: 15px 40px; /* بادينج أكبر */
+  background: linear-gradient(90deg, #22c55e, #10b981); /* خلفية متدرجة خضراء */
   color: white;
-  font-size: 1.3rem;
+  border: none;
+  border-radius: 12px; /* radius أكبر */
+  font-size: 22px; /* حجم خط أكبر */
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 15px;
-  box-shadow: 0 4px 8px rgba(90, 103, 216, 0.5);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3); /* ظل جديد */
 }
 
-.submit-btn:hover {
-  background-color: #434aa8;
+.submit-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #10b981, #22c55e); /* عكس الألوان عند الـ hover */
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
 }
 
-/* رسالة النجاح أو الخطأ */
-.message {
-  margin-top: 18px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  background-color: #d4edda;
-  color: #155724;
-  font-weight: 600;
-  font-size: 1.1rem;
-  text-align: center;
-  box-shadow: 0 3px 8px rgba(21, 87, 36, 0.5);
-}
-
-/* رسالة خطأ */
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  box-shadow: 0 3px 8px rgba(114, 28, 36, 0.5);
-}
-
-/* تحميل */
-.loading {
-  font-size: 1.4rem;
-  color: #5a67d8;
-  text-align: center;
-  margin-top: 40px;
-}
-
-/* متجاوب - شاشات صغيرة */
-@media (max-width: 480px) {
-  .form-container {
-    margin: 15px 10px;
-    padding: 20px 15px;
-  }
-
-  .radio-group {
-    gap: 25px;
-  }
-
-  .radio-group label {
-    font-size: 1.1rem;
-  }
-
-  .submit-btn {
-    font-size: 1.1rem;
-    padding: 12px;
-  }
-}
-.success {
-  /* نسخ من .message */
-  margin-top: 18px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  background-color: #d4edda;
-  color: #155724;
-  font-weight: 600;
-  font-size: 1.1rem;
-  text-align: center;
-  box-shadow: 0 3px 8px rgba(21, 87, 36, 0.5);
-}
-
-.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  box-shadow: 0 3px 8px rgba(114, 28, 36, 0.5);
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
 }
 
 .submit-btn:active {
   transform: scale(0.97);
-  box-shadow: 0 2px 6px rgba(90, 103, 216, 0.5);
+  box-shadow: 0 2px 6px rgba(90, 103, 216, 0.5); /* حافظنا على الـ active */
 }
 
 input[type="radio"]:focus {
-  outline: 2px solid #5a67d8;
+  outline: 2px solid #5a67d8; /* حافظنا على الـ focus */
 }
 .submit-btn:focus {
-  outline: 2px solid #434aa8;
+  outline: 2px solid #434aa8; /* حافظنا على الـ focus */
 }
 
+/* رسائل الحالة (نجاح/خطأ) */
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 15px 25px;
+  border-radius: 12px;
+  margin-top: 30px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2);
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 15px 25px;
+  border-radius: 12px;
+  margin-top: 30px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+}
+
+/* تحميل */
+.loading-state { /* غيرنا الاسم عشان يتناسب مع الـ JSX */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px; /* ارتفاع عشان يبقى فيه مساحة للرسالة */
+  font-size: 24px; /* حجم خط أكبر */
+  color: #4a4a4a;
+}
+
+/* رسالة عدم وجود بيانات */
+.no-data {
+  text-align: center;
+  color: #6b7280;
+  font-size: 20px;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f5f8ff;
+  border-radius: 15px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Submitted Report Display */
+.submitted-report {
+  margin-top: 30px;
+  border: 1px solid #d1d5db;
+  border-radius: 15px;
+  padding: 25px 30px;
+  background-color: #f9fafb;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.submitted-message {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px dashed #e0e7ff;
+}
+
+.question-display-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.question-display-group:last-child {
+  border-bottom: none;
+}
+
+.question-display-group .question-text {
+  margin-bottom: 0;
+  flex-grow: 1;
+  text-align: right; /* عشان النص يبقى محاذاة لليمين زي الأسئلة العربية */
+  padding-right: 15px; /* مسافة بين النص والإجابة */
+  color: #1e293b; /* نفس لون السؤال في الفورم */
+}
+
+.answer-text {
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 60px; /* عشان تكون الإجابة ثابتة العرض */
+  text-align: center;
+}
+
+.yes-answer {
+  color: #22c55e;
+}
+
+.no-answer {
+  color: #ef4444;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 30px 20px;
+    margin: 30px auto;
+  }
+
+  .form-title {
+    font-size: 30px;
+    margin-bottom: 30px;
+  }
+
+  .week-heading {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .week-btn {
+    padding: 8px 15px;
+    font-size: 15px;
+    min-width: 80px;
+  }
+
+  .question-group {
+    padding: 15px 20px;
+    margin-bottom: 20px;
+  }
+
+  .question-text {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .radio-group {
+    flex-direction: column; /* Stack radio buttons on small screens */
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .radio-group label {
+    font-size: 16px;
+  }
+
+  .radio-group input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  .submit-btn {
+    padding: 12px 30px;
+    font-size: 18px;
+  }
+
+  .success-message,
+  .error-message {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .submitted-report {
+    padding: 20px 25px;
+  }
+
+  .submitted-message {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .question-display-group .question-text,
+  .answer-text {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 20px 15px;
+    margin: 20px auto;
+  }
+
+  .form-title {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+
+  .week-heading {
+    font-size: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .week-selector {
+    gap: 8px;
+  }
+
+  .week-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: 60px;
+  }
+
+  .question-group {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+  }
+
+  .question-text {
+    font-size: 16px;
+  }
+
+  .radio-group label {
+    font-size: 14px;
+  }
+
+  .radio-group input[type="radio"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .submit-btn {
+    padding: 10px 25px;
+    font-size: 16px;
+  }
+
+  .success-message,
+  .error-message {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  .submitted-report {
+    padding: 15px 20px;
+  }
+
+  .submitted-message {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .question-display-group {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 0;
+  }
+
+  .question-display-group .question-text {
+    font-size: 14px;
+    text-align: right;
+    width: 100%; /* تأكد من أنها تأخذ العرض الكامل */
+    padding-right: 0;
+    margin-bottom: 5px; /* مسافة بين السؤال والإجابة */
+  }
+
+  .answer-text {
+    font-size: 16px;
+    width: 100%; /* تأكد من أنها تأخذ العرض الكامل */
+    text-align: right; /* اجعل الإجابة على يمين السؤال */
+  }
+}
+
+/* Transitions */
 .form-container,
 .question-group,
-.submit-btn {
+.submit-btn,
+.week-btn {
   transition: all 0.3s ease;
 }
