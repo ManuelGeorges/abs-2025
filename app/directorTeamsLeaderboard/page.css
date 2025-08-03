@@ -1,0 +1,323 @@
+/* Leaderboard Container */
+.leaderboard-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 40px 60px;
+  background: linear-gradient(145deg, #f0f4ff, #d9e6ff);
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(30, 60, 120, 0.25);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
+}
+
+/* Title */
+.leaderboard-title {
+  text-align: center;
+  font-size: 38px;
+  color: #1e40af;
+  margin-bottom: 40px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-shadow: 2px 2px 7px rgba(30, 64, 175, 0.4);
+}
+
+/* Leaderboard Table */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  text-align: center;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 19px;
+  overflow: hidden;
+  border-radius: 20px;
+  table-layout: fixed;
+}
+
+.leaderboard-table thead tr {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #fff;
+  font-weight: 700;
+  font-size: 22px;
+  border-radius: 20px 20px 0 0;
+  user-select: none;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 20px 18px;
+  word-wrap: break-word;
+}
+
+.leaderboard-table tbody tr {
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(96, 149, 250, 0.15);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  cursor: default;
+}
+
+.leaderboard-table tbody tr:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 60px rgba(59, 130, 246, 0.35);
+}
+
+/* Rank Styles */
+.gold {
+  background: linear-gradient(135deg, #fff8dc, #ffe680);
+  color: #b27c00;
+  font-weight: 700;
+  border-left: 10px solid #ffd600;
+  box-shadow: 0 10px 30px #ffd600bb;
+}
+
+.silver {
+  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+  color: #4a4a4a;
+  font-weight: 700;
+  border-left: 10px solid #b0bec5;
+  box-shadow: 0 10px 30px #aab8c6cc;
+}
+
+.bronze {
+  background: linear-gradient(135deg, #d7ccc8, #c09b79);
+  color: #5d3a1a;
+  font-weight: 700;
+  border-left: 10px solid #a67c3d;
+  box-shadow: 0 10px 30px #a67c3dcc;
+}
+
+.highlight {
+  background: #d4edda;
+  font-weight: 700;
+  border-left: 10px solid #28a745;
+  box-shadow: 0 8px 25px #28a745bb;
+  color: #155724;
+}
+
+.spacer-row td {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  height: 20px;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 22px;
+  color: #4a4a4a;
+  margin-top: 120px;
+}
+
+.you {
+  font-size: 15px;
+  color: #2e7d32;
+  font-style: italic;
+  margin-left: 8px;
+}
+
+/* Score column style */
+.leaderboard-table tbody tr td:nth-child(3) {
+  font-weight: 500;
+  font-style: italic;
+  color: #334155;
+}
+
+/* Week Selector Buttons */
+.week-selector {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.week-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.week-btn:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+}
+
+.week-btn.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.week-btn:disabled {
+  border-color: #ccc;
+  color: #aaa;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+}
+
+.yes {
+  color: green;
+  font-weight: bold;
+}
+
+.no {
+  color: red;
+  font-weight: bold;
+}
+
+.no-data {
+  text-align: center;
+  color: gray;
+  margin-top: 1rem;
+}
+
+/* ====== Responsive Media Queries ====== */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 30px 20px;
+  }
+
+  .leaderboard-title {
+    font-size: 28px;
+  }
+
+  .leaderboard-table {
+    font-size: 16px;
+  }
+
+  .leaderboard-table thead tr {
+    font-size: 18px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 12px 10px;
+  }
+
+  .loading-text {
+    font-size: 18px;
+  }
+
+  .you {
+    font-size: 13px;
+  }
+
+  .week-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-title {
+    font-size: 22px;
+  }
+
+  .leaderboard-table {
+    font-size: 14px;
+  }
+
+  .leaderboard-table thead tr {
+    font-size: 16px;
+  }
+
+  .loading-text {
+    font-size: 16px;
+  }
+
+  .you {
+    font-size: 12px;
+  }
+
+  .week-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* أهم تعديل على الأعمدة عشان الكلمات تلتف بدل ما تتقطع */
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px 10px;
+  word-wrap: break-word;       /* السماح بالتفاف الكلمة */
+  word-break: break-word;      /* كسر الكلمات الطويلة */
+  white-space: normal;         /* عشان الكلام يلتف */
+}
+
+/* نعدل تاني على الجدول عشان يبقى responsive أكتر */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  text-align: center;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 18px;
+  overflow-x: auto;       /* لو الجدول طويل يسمح بالتمرير الأفقي */
+  border-radius: 20px;
+  table-layout: auto;     /* خلي الجدول متجاوب مش ثابت */
+}
+
+/* في الميديا كويريز، نقلل padding وخففنا حجم الخط */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 20px 15px;
+  }
+
+  .leaderboard-title {
+    font-size: 26px;
+  }
+
+  .leaderboard-table {
+    font-size: 14px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 6px;
+    font-size: .8em;
+  }
+
+  .week-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-container {
+    padding: 15px 10px;
+  }
+
+  .leaderboard-title {
+    font-size: 20px;
+  }
+
+  .leaderboard-table {
+    font-size: 12px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 6px 3px;
+  }
+  .leaderboard-table th {
+    font-size: .5em;
+    text-wrap: nowrap; /* منع التفاف النص في العناوين */
+  }
+
+  .week-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
+
+.rank-header{
+  white-space: nowrap; /* منع التفاف النص */
+  width: 80px;
+}

@@ -46,33 +46,37 @@ export default function DirectorLeaderboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedWeek) return;
+    if (selectedWeek === null) return;
 
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
         const reportsRef = collection(db, 'reports');
         const questRef = collection(db, 'questScores');
+        let reportsSnap, questSnap;
 
-        const reportsQuery = query(reportsRef, where('weekNumber', '==', Number(selectedWeek)));
-        const reportsSnap = await getDocs(reportsQuery);
+        if (selectedWeek === 'all') {
+          reportsSnap = await getDocs(reportsRef);
+          questSnap = await getDocs(questRef);
+        } else {
+          const reportsQuery = query(reportsRef, where('weekNumber', '==', Number(selectedWeek)));
+          reportsSnap = await getDocs(reportsQuery);
 
-        const questStart = new Date('2025-06-13');
-        const startOfWeek = new Date(questStart);
-        startOfWeek.setDate(startOfWeek.getDate() + (selectedWeek - 1) * 7);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(endOfWeek.getDate() + 6);
+          const questStart = new Date('2025-06-13');
+          const startOfWeek = new Date(questStart);
+          startOfWeek.setDate(startOfWeek.getDate() + (selectedWeek - 1) * 7);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(endOfWeek.getDate() + 6);
 
-        const questSnap = await getDocs(questRef);
+          const questQuery = query(questRef, where('date', '>=', startOfWeek), where('date', '<=', endOfWeek));
+          questSnap = await getDocs(questQuery);
+        }
 
         const questScores = {};
         questSnap.forEach((doc) => {
           const data = doc.data();
-          const date = new Date(data.date);
-          if (date >= startOfWeek && date <= endOfWeek) {
-            if (!questScores[data.userId]) questScores[data.userId] = 0;
-            questScores[data.userId] += Number(data.score || 0);
-          }
+          if (!questScores[data.userId]) questScores[data.userId] = 0;
+          questScores[data.userId] += Number(data.score || 0);
         });
 
         const tempData = {};
@@ -82,12 +86,11 @@ export default function DirectorLeaderboardPage() {
           if (!tempData[userId]) {
             tempData[userId] = {
               userId,
-              reportScore: Number(data.score) || 0,
+              reportScore: 0,
               questScore: 0,
             };
-          } else {
-            tempData[userId].reportScore = Number(data.score) || 0;
           }
+          tempData[userId].reportScore += Number(data.score) || 0;
         });
 
         Object.keys(questScores).forEach((userId) => {
@@ -95,11 +98,10 @@ export default function DirectorLeaderboardPage() {
             tempData[userId] = {
               userId,
               reportScore: 0,
-              questScore: questScores[userId],
+              questScore: 0,
             };
-          } else {
-            tempData[userId].questScore = questScores[userId];
           }
+          tempData[userId].questScore += questScores[userId];
         });
 
         const allUserIds = Object.keys(tempData);
@@ -183,6 +185,7 @@ export default function DirectorLeaderboardPage() {
       <h2 className="leaderboard-title">🏆 Director Leaderboard</h2>
 
       <div className="week-selector">
+
         {availableWeeks.map((week) => (
           <button
             key={week}
@@ -192,6 +195,12 @@ export default function DirectorLeaderboardPage() {
             Week {week}
           </button>
         ))}
+        <button
+          onClick={() => setSelectedWeek('all')}
+          className={`week-btn ${selectedWeek === 'all' ? 'selected' : ''}`}
+        >
+          All
+        </button>
       </div>
 
       {loading && <p className="loading-text">Loading leaderboard...</p>}
@@ -227,7 +236,7 @@ export default function DirectorLeaderboardPage() {
       )}
 
       {!loading && selectedWeek && reportData && reportData.length === 0 && (
-        <p className="loading-text">No data for Week {selectedWeek}</p>
+        <p className="loading-text">No data for {selectedWeek === 'all' ? 'all weeks' : `Week ${selectedWeek}`}</p>
       )}
     </div>
   );
