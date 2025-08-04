@@ -2,13 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import './page.css';
 
-export default function DirectorLeaderboardPage() {
+export default function LeaderboardPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [userRole, setUserRole] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,17 +29,8 @@ export default function DirectorLeaderboardPage() {
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setCurrentUserId(user.uid);
-        const docRef = doc(db, 'users', user.uid);
-        const snap = await getDoc(docRef);
-        const data = snap.data();
-        setUserRole(data?.role || null);
-      } else {
-        setCurrentUserId(null);
-        setUserRole(null);
-      }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUserId(user?.uid || null);
     });
     return () => unsubscribe();
   }, []);
@@ -53,6 +43,7 @@ export default function DirectorLeaderboardPage() {
       try {
         const reportsRef = collection(db, 'reports');
         const questRef = collection(db, 'questScores');
+
         let reportsSnap, questSnap;
 
         if (selectedWeek === 'all') {
@@ -67,9 +58,91 @@ export default function DirectorLeaderboardPage() {
           startOfWeek.setDate(startOfWeek.getDate() + (selectedWeek - 1) * 7);
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(endOfWeek.getDate() + 6);
+          
+          questSnap = await getDocs(questRef);
 
-          const questQuery = query(questRef, where('date', '>=', startOfWeek), where('date', '<=', endOfWeek));
-          questSnap = await getDocs(questQuery);
+          const questScores = {};
+          questSnap.forEach((doc) => {
+            const data = doc.data();
+            const date = new Date(data.date);
+            if (date >= startOfWeek && date <= endOfWeek) {
+              if (!questScores[data.userId]) questScores[data.userId] = 0;
+              questScores[data.userId] += Number(data.score || 0);
+            }
+          });
+
+          const tempData = {};
+          reportsSnap.forEach((doc) => {
+            const data = doc.data();
+            const userId = data.userId;
+            if (!tempData[userId]) {
+              tempData[userId] = {
+                userId,
+                reportScore: Number(data.score) || 0,
+                questScore: 0,
+              };
+            } else {
+              tempData[userId].reportScore = Number(data.score) || 0;
+            }
+          });
+
+          Object.keys(questScores).forEach((userId) => {
+            if (!tempData[userId]) {
+              tempData[userId] = {
+                userId,
+                reportScore: 0,
+                questScore: questScores[userId],
+              };
+            } else {
+              tempData[userId].questScore = questScores[userId];
+            }
+          });
+
+          const allUserIds = Object.keys(tempData);
+
+          const usersMap = {};
+          function chunkArray(array, size) {
+            const chunks = [];
+            for (let i = 0; i < array.length; i += size) {
+              chunks.push(array.slice(i, i + size));
+            }
+            return chunks;
+          }
+
+          if (allUserIds.length > 0) {
+            const chunks = chunkArray(allUserIds, 10);
+            for (const chunk of chunks) {
+              const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
+              const snap = await getDocs(q);
+              snap.forEach((doc) => {
+                const data = doc.data();
+                usersMap[doc.id] = {
+                  name: data.name ?? 'No Name',
+                  teamKey: data.teamKey ?? 'No Team',
+                };
+              });
+            }
+          }
+
+          const finalData = allUserIds.map((userId) => ({
+            userId,
+            userName: usersMap[userId]?.name || 'No Name',
+            userTeam: usersMap[userId]?.teamKey || 'No Team',
+            reportScore: tempData[userId].reportScore,
+            questScore: tempData[userId].questScore,
+            totalScore: (tempData[userId].reportScore || 0) + (tempData[userId].questScore || 0),
+          }));
+
+          finalData.sort((a, b) => {
+            if (b.totalScore === a.totalScore) {
+              return a.userName.localeCompare(b.userName);
+            }
+            return b.totalScore - a.totalScore;
+          });
+
+          setReportData(finalData);
+          setLoading(false);
+          return;
         }
 
         const questScores = {};
@@ -115,17 +188,19 @@ export default function DirectorLeaderboardPage() {
           return chunks;
         }
 
-        const chunks = chunkArray(allUserIds, 10);
-        for (const chunk of chunks) {
-          const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
-          const snap = await getDocs(q);
-          snap.forEach((doc) => {
-            const data = doc.data();
-            usersMap[doc.id] = {
-              name: data.name ?? 'No Name',
-              teamKey: data.teamKey ?? 'No Team',
-            };
-          });
+        if (allUserIds.length > 0) {
+          const chunks = chunkArray(allUserIds, 10);
+          for (const chunk of chunks) {
+            const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
+            const snap = await getDocs(q);
+            snap.forEach((doc) => {
+              const data = doc.data();
+              usersMap[doc.id] = {
+                name: data.name ?? 'No Name',
+                teamKey: data.teamKey ?? 'No Team',
+              };
+            });
+          }
         }
 
         const finalData = allUserIds.map((userId) => ({
@@ -144,23 +219,9 @@ export default function DirectorLeaderboardPage() {
           return b.totalScore - a.totalScore;
         });
 
-        const ranks = [];
-        ranks[0] = 1;
-        for (let i = 1; i < finalData.length; i++) {
-          if (finalData[i].totalScore === finalData[i - 1].totalScore) {
-            ranks[i] = ranks[i - 1];
-          } else {
-            ranks[i] = ranks[i - 1] + 1;
-          }
-        }
-
-        finalData.forEach((item, index) => {
-          item.rank = ranks[index];
-        });
-
         setReportData(finalData);
       } catch (error) {
-        console.error('❌ Error fetching leaderboard:', error);
+        console.error('Error fetching leaderboard:', error);
       } finally {
         setLoading(false);
       }
@@ -169,6 +230,21 @@ export default function DirectorLeaderboardPage() {
     fetchLeaderboard();
   }, [selectedWeek]);
 
+  function getDenseRanks(sortedData) {
+    const ranks = [];
+    if (sortedData.length > 0) {
+      ranks[0] = 1;
+      for (let i = 1; i < sortedData.length; i++) {
+        if (sortedData[i].totalScore === sortedData[i - 1].totalScore) {
+          ranks[i] = ranks[i - 1];
+        } else {
+          ranks[i] = ranks[i - 1] + 1;
+        }
+      }
+    }
+    return ranks;
+  }
+
   function getRowClass(rank) {
     if (rank === 1) return 'gold';
     if (rank === 2) return 'silver';
@@ -176,16 +252,13 @@ export default function DirectorLeaderboardPage() {
     return '';
   }
 
-  if (userRole && userRole !== 'director') {
-    return <p className="loading-text">⛔ Unauthorized - Directors only</p>;
-  }
-
+  const ranks = reportData ? getDenseRanks(reportData) : [];
+  
   return (
     <div className="leaderboard-container">
-      <h2 className="leaderboard-title">🏆 Director Leaderboard</h2>
+      <h2 className="leaderboard-title">🏆 Leaderboard</h2>
 
       <div className="week-selector">
-
         {availableWeeks.map((week) => (
           <button
             key={week}
@@ -218,12 +291,12 @@ export default function DirectorLeaderboardPage() {
             </tr>
           </thead>
           <tbody>
-            {reportData.map((player) => (
+            {reportData.map((player, index) => (
               <tr
                 key={player.userId}
-                className={`${getRowClass(player.rank)} ${player.userId === currentUserId ? 'highlight' : ''}`}
+                className={`${getRowClass(ranks[index])} ${player.userId === currentUserId ? 'highlight' : ''}`}
               >
-                <td>{player.rank}</td>
+                <td>{ranks[index]}</td>
                 <td>{player.userName}{player.userId === currentUserId && ' ⭐'}</td>
                 <td>{player.userTeam}</td>
                 <td>{player.reportScore}</td>
@@ -236,7 +309,7 @@ export default function DirectorLeaderboardPage() {
       )}
 
       {!loading && selectedWeek && reportData && reportData.length === 0 && (
-        <p className="loading-text">No data for {selectedWeek === 'all' ? 'all weeks' : `Week ${selectedWeek}`}</p>
+        <p className="loading-text">No data for {selectedWeek === 'all' ? 'all weeks' : `Week ل${selectedWeek}`}</p>
       )}
     </div>
   );
